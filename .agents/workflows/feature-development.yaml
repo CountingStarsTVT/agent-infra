@@ -1,0 +1,113 @@
+# Feature Development Workflow
+# Use this workflow when implementing a new feature.
+
+name: feature-development
+description: End-to-end workflow for developing a new feature.
+
+steps:
+  - name: analysis
+    description: Analyze the feature request, explore the codebase, and identify affected areas.
+    recommended_agents:
+      - claude
+      - gemini
+    tasks:
+      - Read and understand the feature requirements
+      - Explore the codebase to identify relevant files and modules
+      - Identify dependencies and potential impact areas
+      - Document findings in the task file
+    inputs:
+      - Feature request or issue description
+      - Project codebase
+    outputs:
+      - Updated task file with analysis section
+      - List of affected files
+      - Identified risks or constraints
+
+  - name: design
+    description: Create a technical design for the feature implementation.
+    recommended_agents:
+      - claude
+      - gemini
+    tasks:
+      - Define interfaces and data structures
+      - Outline the implementation approach
+      - Identify edge cases and error handling strategies
+      - Document the design in the task file
+    inputs:
+      - Analysis results from previous step
+      - Project architecture and conventions
+    outputs:
+      - Updated task file with design section
+      - Interface definitions
+      - Implementation plan
+
+  - name: implementation
+    description: Implement the feature according to the design.
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - Create a feature branch
+      - Implement the feature code
+      - Write unit tests
+      - Write integration tests (if applicable)
+      - Ensure code follows project conventions
+    inputs:
+      - Technical design from previous step
+      - Project coding standards
+    outputs:
+      - Feature branch with implementation
+      - Test files
+      - Updated task file with implementation notes
+
+  - name: review
+    description: Review the implementation for correctness, style, and best practices.
+    recommended_agents:
+      - claude
+    tasks:
+      - Review code changes for correctness
+      - Check adherence to project conventions
+      - Verify test coverage and quality
+      - Check for security and performance issues
+      - Create a review report
+    inputs:
+      - Implementation branch
+      - Project conventions
+    outputs:
+      - Review report
+      - List of issues to fix
+
+  - name: fix
+    description: Address issues found during the review phase.
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - Fix all critical and major issues from the review
+      - Address minor issues and suggestions as appropriate
+      - Update tests if needed
+      - Verify all tests pass
+    inputs:
+      - Review report
+      - Implementation branch
+    outputs:
+      - Updated branch with fixes
+      - Updated task file
+
+  - name: commit
+    description: Finalize changes and create a pull request.
+    recommended_agents:
+      - claude
+      - human
+    tasks:
+      - Ensure all tests pass
+      - Write clear commit messages following conventions
+      - Create a pull request with proper description
+      - Link the PR to related issues
+      - Move task to completed
+    inputs:
+      - Final implementation branch
+      - Task file
+    outputs:
+      - Pull request
+      - Completed task file in .ai-workspace/completed/

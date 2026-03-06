@@ -1,0 +1,24 @@
+name: Other
+description: For issues that don't fit other categories.
+title: "[Other]: "
+labels: ["triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for issues that don't fit into bug reports, feature requests, questions, or documentation.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe your issue or topic.
+      placeholder: Describe what this is about...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any additional context, links, or references.

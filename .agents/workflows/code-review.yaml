@@ -1,0 +1,60 @@
+# Code Review Workflow
+# Use this workflow for reviewing pull requests or code changes.
+
+name: code-review
+description: Workflow for thorough code review of pull requests or branches.
+
+steps:
+  - name: analysis
+    description: Load context and understand the scope of changes.
+    recommended_agents:
+      - claude
+      - gemini
+    tasks:
+      - Read the PR description and linked issues
+      - Review the diff to understand what changed
+      - Identify the intent and scope of the changes
+      - Load relevant project conventions and standards
+    inputs:
+      - Pull request or branch to review
+      - Project conventions
+    outputs:
+      - Understanding of change scope
+      - List of files to review
+
+  - name: review
+    description: Perform a thorough code review.
+    recommended_agents:
+      - claude
+    tasks:
+      - Check code correctness and logic
+      - Verify adherence to project coding standards
+      - Check for security vulnerabilities
+      - Assess performance implications
+      - Verify test coverage and test quality
+      - Check documentation updates
+      - Look for edge cases and error handling
+      - Review commit messages
+    inputs:
+      - Code changes (diff)
+      - Project conventions
+      - Existing test suite
+    outputs:
+      - Review report with categorized findings
+      - Approval or change request
+
+  - name: report
+    description: Document and communicate review findings.
+    recommended_agents:
+      - claude
+    tasks:
+      - Create a review report from the template
+      - Categorize findings by severity (critical, major, minor, suggestion)
+      - Provide actionable feedback with specific file and line references
+      - Summarize overall assessment
+    inputs:
+      - Review findings from previous step
+      - Review report template
+    outputs:
+      - Completed review report
+      - PR comments (if applicable)

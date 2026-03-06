@@ -1,0 +1,117 @@
+# Refactoring Workflow
+# Use this workflow for code refactoring tasks.
+
+name: refactoring
+description: Workflow for safe and structured code refactoring.
+
+steps:
+  - name: analysis
+    description: Analyze the current code and determine the scope of refactoring.
+    recommended_agents:
+      - claude
+      - gemini
+    tasks:
+      - Identify the code to be refactored and the reasons for refactoring
+      - Map all dependencies and consumers of the affected code
+      - Assess the risk and complexity of the refactoring
+      - Identify existing test coverage for the affected areas
+      - Document findings in the task file
+    inputs:
+      - Refactoring request or issue description
+      - Project codebase
+    outputs:
+      - Scope analysis with dependency map
+      - Risk assessment
+      - Updated task file with analysis section
+
+  - name: design
+    description: Plan the refactoring approach to minimize risk.
+    recommended_agents:
+      - claude
+    tasks:
+      - Define the target architecture or code structure
+      - Plan incremental refactoring steps (avoid big-bang changes)
+      - Identify intermediate states that should remain functional
+      - Plan additional tests needed before refactoring
+      - Document the refactoring plan in the task file
+    inputs:
+      - Scope analysis from previous step
+      - Project architecture
+    outputs:
+      - Refactoring plan with incremental steps
+      - List of prerequisite tests
+      - Updated task file with design section
+
+  - name: implementation
+    description: Execute the refactoring according to the plan.
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - Create a refactoring branch
+      - Add prerequisite tests (if not already present)
+      - Execute refactoring steps incrementally
+      - Verify tests pass after each step
+      - Update any affected documentation or comments
+      - Ensure code follows project conventions
+    inputs:
+      - Refactoring plan from previous step
+      - Project coding standards
+    outputs:
+      - Refactoring branch with changes
+      - Updated or new test files
+      - Updated task file with implementation notes
+
+  - name: review
+    description: Verify the refactoring preserves behavior and improves code quality.
+    recommended_agents:
+      - claude
+    tasks:
+      - Verify functional equivalence (no behavior changes unless intended)
+      - Check that all tests pass
+      - Verify code quality improvements
+      - Check for any missed dependencies or consumers
+      - Assess performance impact (if applicable)
+      - Create a review report
+    inputs:
+      - Refactoring branch
+      - Original code for comparison
+      - Test results
+    outputs:
+      - Review report
+      - List of issues (if any)
+
+  - name: fix
+    description: Address any issues found during review.
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - Fix issues identified in the review
+      - Update tests if needed
+      - Verify all tests pass
+      - Ensure no regressions
+    inputs:
+      - Review report
+      - Refactoring branch
+    outputs:
+      - Updated branch with fixes
+      - Updated task file
+
+  - name: commit
+    description: Finalize the refactoring and create a pull request.
+    recommended_agents:
+      - claude
+      - human
+    tasks:
+      - Ensure all tests pass
+      - Write clear commit messages explaining the refactoring
+      - Create a pull request with detailed description of changes
+      - Link the PR to related issues
+      - Move task to completed
+    inputs:
+      - Final refactoring branch
+      - Task file
+    outputs:
+      - Pull request
+      - Completed task file in .ai-workspace/completed/

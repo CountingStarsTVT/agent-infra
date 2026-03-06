@@ -1,0 +1,113 @@
+# 功能开发工作流
+# 实现新功能时使用此工作流。
+
+name: feature-development
+description: 开发新功能的端到端工作流。
+
+steps:
+  - name: analysis
+    description: 分析功能需求，探索代码库，识别受影响的区域。
+    recommended_agents:
+      - claude
+      - gemini
+    tasks:
+      - 阅读并理解功能需求
+      - 探索代码库以识别相关文件和模块
+      - 识别依赖项和潜在影响区域
+      - 将发现记录在任务文件中
+    inputs:
+      - 功能需求或 Issue 描述
+      - 项目代码库
+    outputs:
+      - 更新后的任务文件（分析部分）
+      - 受影响文件列表
+      - 识别的风险或约束
+
+  - name: design
+    description: 为功能实现创建技术设计方案。
+    recommended_agents:
+      - claude
+      - gemini
+    tasks:
+      - 定义接口和数据结构
+      - 概述实现方案
+      - 识别边界情况和错误处理策略
+      - 在任务文件中记录设计方案
+    inputs:
+      - 上一步的分析结果
+      - 项目架构和规范
+    outputs:
+      - 更新后的任务文件（设计部分）
+      - 接口定义
+      - 实现计划
+
+  - name: implementation
+    description: 按照设计方案实现功能。
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - 创建功能分支
+      - 实现功能代码
+      - 编写单元测试
+      - 编写集成测试（如适用）
+      - 确保代码遵循项目规范
+    inputs:
+      - 上一步的技术设计
+      - 项目编码标准
+    outputs:
+      - 包含实现的功能分支
+      - 测试文件
+      - 更新后的任务文件（实现备注）
+
+  - name: review
+    description: 审查实现的正确性、代码风格和最佳实践。
+    recommended_agents:
+      - claude
+    tasks:
+      - 审查代码变更的正确性
+      - 检查是否遵循项目规范
+      - 验证测试覆盖率和质量
+      - 检查安全和性能问题
+      - 创建审查报告
+    inputs:
+      - 实现分支
+      - 项目规范
+    outputs:
+      - 审查报告
+      - 待修复问题列表
+
+  - name: fix
+    description: 处理审查阶段发现的问题。
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - 修复审查中的所有严重和重要问题
+      - 酌情处理次要问题和建议
+      - 根据需要更新测试
+      - 验证所有测试通过
+    inputs:
+      - 审查报告
+      - 实现分支
+    outputs:
+      - 包含修复的更新分支
+      - 更新后的任务文件
+
+  - name: commit
+    description: 最终确认变更并创建拉取请求。
+    recommended_agents:
+      - claude
+      - human
+    tasks:
+      - 确保所有测试通过
+      - 按规范编写清晰的提交信息
+      - 创建包含适当描述的拉取请求
+      - 将 PR 关联到相关 Issue
+      - 将任务移至已完成
+    inputs:
+      - 最终实现分支
+      - 任务文件
+    outputs:
+      - 拉取请求
+      - 已完成的任务文件（位于 .ai-workspace/completed/）

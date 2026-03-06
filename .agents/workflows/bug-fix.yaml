@@ -1,0 +1,112 @@
+# Bug Fix Workflow
+# Use this workflow when fixing a bug or defect.
+
+name: bug-fix
+description: Workflow for diagnosing and fixing bugs.
+
+steps:
+  - name: analysis
+    description: Reproduce the bug, identify the root cause, and determine the scope of the fix.
+    recommended_agents:
+      - claude
+      - gemini
+    tasks:
+      - Understand the bug report and expected behavior
+      - Reproduce the bug (if possible)
+      - Trace the code path to identify the root cause
+      - Determine which files and components are affected
+      - Document findings in the task file
+    inputs:
+      - Bug report or issue description
+      - Steps to reproduce
+      - Project codebase
+    outputs:
+      - Root cause analysis
+      - List of affected files
+      - Updated task file with analysis section
+
+  - name: design
+    description: Plan the fix approach and consider edge cases.
+    recommended_agents:
+      - claude
+    tasks:
+      - Determine the best approach to fix the bug
+      - Identify potential side effects of the fix
+      - Plan test cases to verify the fix
+      - Document the fix approach in the task file
+    inputs:
+      - Root cause analysis from previous step
+      - Project architecture
+    outputs:
+      - Fix approach documented in task file
+      - List of test cases to add
+
+  - name: implementation
+    description: Implement the bug fix and add regression tests.
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - Create a bugfix branch
+      - Implement the fix
+      - Add regression tests that fail without the fix
+      - Verify existing tests still pass
+      - Ensure code follows project conventions
+    inputs:
+      - Fix approach from previous step
+      - Project coding standards
+    outputs:
+      - Bugfix branch with implementation
+      - Regression test files
+      - Updated task file with implementation notes
+
+  - name: review
+    description: Verify the fix is correct and complete.
+    recommended_agents:
+      - claude
+    tasks:
+      - Verify the fix addresses the root cause
+      - Check that regression tests are adequate
+      - Ensure no new issues are introduced
+      - Verify the fix doesn't break existing functionality
+      - Create a review report
+    inputs:
+      - Bugfix branch
+      - Root cause analysis
+    outputs:
+      - Review report
+      - List of issues (if any)
+
+  - name: fix
+    description: Address any issues found during review.
+    recommended_agents:
+      - codex
+      - cursor
+    tasks:
+      - Fix issues identified in the review
+      - Update tests if needed
+      - Verify all tests pass
+    inputs:
+      - Review report
+      - Bugfix branch
+    outputs:
+      - Updated branch with fixes
+      - Updated task file
+
+  - name: commit
+    description: Finalize the bug fix and create a pull request.
+    recommended_agents:
+      - claude
+      - human
+    tasks:
+      - Ensure all tests pass
+      - Write commit messages referencing the bug/issue
+      - Create a pull request with bug fix description
+      - Link the PR to the bug report issue
+      - Move task to completed
+    inputs:
+      - Final bugfix branch
+      - Task file
+    outputs:
+      - Pull request
+      - Completed task file in .ai-workspace/completed/

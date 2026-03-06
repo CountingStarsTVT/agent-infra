@@ -1,0 +1,22 @@
+description = "Refine an Issue or PR title to Conventional Commits format"
+prompt = """
+Analyze and refine the title of Issue/PR #{{args}}.
+
+Steps:
+
+1. **Fetch info**:
+   - Try `gh issue view {{args}}` or `gh pr view {{args}}`.
+   - Get title, body, labels, files.
+
+2. **Analyze**:
+   - Ignore the original title.
+   - From body and labels, determine Type (feat/fix/docs/refactor/chore...) and Scope.
+   - Distill Subject (English, imperative mood, max 50 chars).
+
+3. **Suggest**:
+   - Output: `Original title` -> `New title`.
+   - Ask user for confirmation.
+
+4. **Execute** (if user confirms):
+   - `gh issue edit {{args}} --title "..."` or `gh pr edit {{args}} --title "..."`.
+"""
