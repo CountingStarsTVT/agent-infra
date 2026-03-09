@@ -1,0 +1,43 @@
+name: Question
+description: Ask a question about the project.
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're happy to help. Please check existing issues and documentation first.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to know?
+      placeholder: Describe your question...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Any relevant context that helps us understand your question.
+      placeholder: |
+        - What are you trying to achieve?
+        - What have you tried so far?
+        - Any relevant links or references?
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which area does this question relate to?
+      options:
+        - Setup / Installation
+        - Configuration
+        - Usage / API
+        - Architecture / Design
+        - Contributing
+        - Other
+    validations:
+      required: true

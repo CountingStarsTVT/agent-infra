@@ -1,0 +1,37 @@
+# Validates PR titles follow Conventional Commits format.
+# See: https://www.conventionalcommits.org/
+
+name: PR Title Check
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  validate-pr-title:
+    name: Validate PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            chore
+            build
+            ci
+            revert
+          subjectPattern: ^.{5,100}$
+          subjectPatternError: |
+            PR title subject must be between 5 and 100 characters.
+          wip: true
