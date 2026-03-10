@@ -55,7 +55,18 @@ fi
 
 # ---------- install CLI command ----------
 # Try ~/.local/bin first (no sudo needed), fall back to /usr/local/bin
-BIN_SOURCE="$INSTALL_DIR/bin/$BIN_NAME"
+# Prefer Node.js CLI (bin/cli.js) when Node.js >= 18 is available;
+# otherwise fall back to Shell script (bin/ai-collaboration-installer).
+NODE_MAJOR=0
+if command -v node >/dev/null 2>&1; then
+  NODE_MAJOR=$(node -e 'process.stdout.write(String(parseInt(process.versions.node)))' 2>/dev/null || echo 0)
+fi
+
+if [ "$NODE_MAJOR" -ge 18 ] 2>/dev/null; then
+  BIN_SOURCE="$INSTALL_DIR/bin/cli.js"
+else
+  BIN_SOURCE="$INSTALL_DIR/bin/$BIN_NAME"
+fi
 chmod +x "$BIN_SOURCE"
 
 BIN_DIR=""

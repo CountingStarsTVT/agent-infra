@@ -63,6 +63,12 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function loadFresh(relativePath) {
+  const resolved = require.resolve(filePath(relativePath));
+  delete require.cache[resolved];
+  return require(resolved);
+}
+
 const commandSpecs = {
   "analyze-codescan": {
     usage: "<alert-number>",
@@ -251,17 +257,52 @@ test("init-project files have been removed", () => {
 
 test("bootstrap CLI files exist", () => {
   assert.ok(exists("install.sh"), "install.sh should exist");
-  assert.ok(exists("bin/ai-collaboration-installer"), "bin/ai-collaboration-installer should exist");
+  assert.ok(exists("bin/ai-collaboration-installer"), "bin/ai-collaboration-installer (shell) should exist");
+  assert.ok(exists("bin/cli.js"), "bin/cli.js (node) should exist");
 
   const installSh = read("install.sh");
   assert.match(installSh, /git clone/);
   assert.match(installSh, /\.ai-collaboration-installer/);
 
-  const cli = read("bin/ai-collaboration-installer");
-  assert.match(cli, /ai-collaboration-installer init/);
+  const shellCli = read("bin/ai-collaboration-installer");
+  assert.match(shellCli, /ai-collaboration-installer init/);
 
-  const stats = fs.statSync(filePath("bin/ai-collaboration-installer"));
-  assert.ok(stats.mode & 0o111, "bin/ai-collaboration-installer should be executable");
+  const nodeCli = read("bin/cli.js");
+  assert.match(nodeCli, /ai-collaboration-installer/);
+
+  const shellStats = fs.statSync(filePath("bin/ai-collaboration-installer"));
+  assert.ok(shellStats.mode & 0o111, "bin/ai-collaboration-installer should be executable");
+
+  const nodeStats = fs.statSync(filePath("bin/cli.js"));
+  assert.ok(nodeStats.mode & 0o111, "bin/cli.js should be executable");
+});
+
+test("paths detect clone installs when bundled templates live under HOME", () => {
+  const os = require("node:os");
+  const originalHomedir = os.homedir;
+  const tmpDir = fs.mkdtempSync(path.join(require("node:os").tmpdir(), "ai-collab-home-"));
+
+  try {
+    const installDir = path.join(tmpDir, ".ai-collaboration-installer");
+    fs.mkdirSync(path.join(installDir, "templates"), { recursive: true });
+
+    os.homedir = () => tmpDir;
+    const paths = loadFresh("lib/paths.js");
+
+    assert.equal(paths.resolveInstallDir(), installDir);
+    assert.equal(paths.resolveTemplateDir(), filePath("templates"));
+    assert.equal(paths.isCloneInstall(), false);
+
+    fs.rmSync(path.join(installDir, "templates"), { recursive: true, force: true });
+    fs.symlinkSync(filePath("templates"), path.join(installDir, "templates"), "dir");
+
+    const clonePaths = loadFresh("lib/paths.js");
+    assert.equal(clonePaths.resolveTemplateDir(), filePath("templates"));
+    assert.equal(clonePaths.isCloneInstall(), true);
+  } finally {
+    os.homedir = originalHomedir;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 });
 
 test("update-ai-collaboration instructions point to templates rendering", () => {
@@ -397,21 +438,65 @@ test("renderPlaceholders only replaces double-brace placeholders", () => {
   assert.equal(rendered, "literal {project} demo {org} acme");
 });
 
+test("cli version output stays in sync with package.json", () => {
+  const { execFileSync } = require("node:child_process");
+  const pkg = JSON.parse(read("package.json"));
+  const output = execFileSync(process.execPath, [filePath("bin/cli.js"), "version"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(output.trim(), `ai-collaboration-installer ${pkg.version}`);
+});
+
+test("prompt does not recreate readline after close", async () => {
+  const readline = require("node:readline");
+  const originalCreateInterface = readline.createInterface;
+  const originalStdoutWrite = process.stdout.write;
+  let createCount = 0;
+
+  readline.createInterface = () => {
+    createCount += 1;
+    const handlers = {};
+    return {
+      on(event, handler) {
+        handlers[event] = handler;
+        return this;
+      },
+      close() {
+        if (handlers.close) handlers.close();
+      }
+    };
+  };
+  process.stdout.write = () => true;
+
+  try {
+    const promptModule = loadFresh("lib/prompt.js");
+    const firstPrompt = promptModule.prompt("Project name", "demo");
+    promptModule.closePrompt();
+    const firstValue = await firstPrompt;
+    const secondValue = await promptModule.prompt("Project name", "demo");
+
+    assert.equal(firstValue, "demo");
+    assert.equal(secondValue, "demo");
+    assert.equal(createCount, 1);
+  } finally {
+    readline.createInterface = originalCreateInterface;
+    process.stdout.write = originalStdoutWrite;
+  }
+});
+
 test("ai-collaboration-installer init generates seed files in a temp directory", () => {
   const os = require("node:os");
   const { execSync } = require("node:child_process");
 
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-test-"));
-  const cli = filePath("bin/ai-collaboration-installer");
+  const cli = filePath("bin/cli.js");
 
   try {
-    // symlink the real ai-collaboration-installer repo as the template source for this test HOME
-    fs.symlinkSync(rootDir, path.join(tmpDir, ".ai-collaboration-installer"));
-
     // run init with piped input: project=testproj, org=testorg, language=default
     execSync(
-      `printf 'testproj\\ntestorg\\n\\n' | sh "${cli}" init`,
-      { cwd: tmpDir, stdio: "pipe", env: { ...process.env, HOME: tmpDir } }
+      `printf 'testproj\\ntestorg\\n\\n' | node "${cli}" init`,
+      { cwd: tmpDir, stdio: "pipe" }
     );
 
     // verify collaborator.json was generated
@@ -467,7 +552,7 @@ test("ai-collaboration-installer init generates seed files in a temp directory",
 test("ai-collaboration-installer init rejects invalid input", () => {
   const os = require("node:os");
   const { execSync } = require("node:child_process");
-  const cli = filePath("bin/ai-collaboration-installer");
+  const cli = filePath("bin/cli.js");
 
   const cases = [
     { input: 'demo"x\\ntestorg\\n\\n', desc: "project name with quote" },
@@ -477,11 +562,10 @@ test("ai-collaboration-installer init rejects invalid input", () => {
   cases.forEach(({ input, desc }) => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-test-"));
     try {
-      fs.symlinkSync(rootDir, path.join(tmpDir, ".ai-collaboration-installer"));
       assert.throws(() => {
         execSync(
-          `printf '${input}' | sh "${cli}" init`,
-          { cwd: tmpDir, stdio: "pipe", env: { ...process.env, HOME: tmpDir } }
+          `printf '${input}' | node "${cli}" init`,
+          { cwd: tmpDir, stdio: "pipe" }
         );
       }, `should reject: ${desc}`);
     } finally {
@@ -514,7 +598,11 @@ test("README documents the bootstrap installation flow", () => {
   assert.match(readme, /install\.sh/);
   assert.match(readme, /ai-collaboration-installer init/);
   assert.match(readme, /update-ai-collaboration/);
+  assert.match(readme, /npm install -g/);
+  assert.match(readme, /npx ai-collaboration-installer/);
   assert.match(readmeZh, /install\.sh/);
   assert.match(readmeZh, /ai-collaboration-installer init/);
   assert.match(readmeZh, /update-ai-collaboration/);
+  assert.match(readmeZh, /npm install -g/);
+  assert.match(readmeZh, /npx ai-collaboration-installer/);
 });

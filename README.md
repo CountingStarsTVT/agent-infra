@@ -28,6 +28,20 @@ ai-collaboration-installer provides standardized configuration for AI TUI tools 
 
 ### 1. Install ai-collaboration-installer
 
+**Option A — npm (recommended)**
+
+```bash
+npm install -g ai-collaboration-installer
+```
+
+Or run without installing:
+
+```bash
+npx ai-collaboration-installer init
+```
+
+**Option B — Shell script**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/fitlab-ai/ai-collaboration-installer/main/install.sh | sh
 ```
