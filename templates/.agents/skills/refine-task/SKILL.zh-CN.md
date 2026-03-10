@@ -19,15 +19,24 @@ description: >
 
 检查必要文件：
 - `.ai-workspace/active/{task-id}/task.md` - 任务文件
-- `.ai-workspace/active/{task-id}/review.md` - 审查报告
+- 至少一个审查产物：`review.md` 或 `review-r{N}.md`
 
 注意：`{task-id}` 格式为 `TASK-{yyyyMMdd-HHmmss}`，例如 `TASK-20260306-143022`
 
-如果任一文件缺失，提示用户先完成前置步骤。
+如果缺少 `task.md` 或没有任何审查产物，提示用户先完成前置步骤。
+
+随后执行以下发现与校验：
+1. 扫描任务目录中的审查产物文件（`review.md`、`review-r{N}.md`）
+2. 取最高轮次的审查产物作为本次修复输入，记为 `{review-artifact}`
+3. 扫描实现报告文件（`implementation.md`、`implementation-r{N}.md`），取最高轮次作为修复要追加到的 `{implementation-artifact}`
+4. **一致性校验**：检查 `task.md` 的 `## 活动日志` 中最近一条 Code Review 记录的轮次号和文件名，是否与步骤 2 扫描到的最新审查产物匹配
+
+若 Activity Log 记录与实际文件不匹配，立即停止并提示：
+`Review artifact mismatch: Activity Log references {expected} but file not found. Please verify the review artifact exists.`
 
 ### 2. 阅读审查报告
 
-仔细阅读 `review.md` 以理解：
+仔细阅读步骤 1 中确定的最新审查产物 `{review-artifact}` 以理解：
 - 所有阻塞项（必须修复）
 - 所有主要问题（应该修复）
 - 次要问题（可选优化）
@@ -68,7 +77,10 @@ description: >
 
 ### 6. 创建修复报告
 
-更新 `.ai-workspace/active/{task-id}/implementation.md`，追加修复部分。
+更新 `.ai-workspace/active/{task-id}/{implementation-artifact}`，追加修复部分。
+
+追加部分的标题使用：
+`## 修复记录（针对 {review-artifact}）`
 
 ### 7. 更新任务状态
 
@@ -78,7 +90,7 @@ description: >
 - `updated_at`：{当前时间}
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Refinement** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
+  - {yyyy-MM-dd HH:mm} — **Refinement (for {review-artifact})** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
   ```
 
 ### 8. 告知用户
@@ -92,6 +104,8 @@ description: >
 - 主要问题修复：{数量}/{总数}
 - 次要问题修复：{数量}/{总数}
 - 所有测试通过：{是/否}
+- 审查输入：{review-artifact}
+- 更新产物：{implementation-artifact}
 
 下一步 - 重新审查或提交：
 - 重新审查：
@@ -106,26 +120,26 @@ description: >
 
 ## 输出模板
 
-追加到 `implementation.md`：
+追加到 `{implementation-artifact}`：
 
 ```markdown
-## 修复记录
+## 修复记录（针对 {review-artifact}）
 
 ### 审查反馈处理
 
 #### 阻塞项修复
-1. **{问题标题}**（来自 review.md）
+1. **{问题标题}**（来自 {review-artifact}）
    - **修复**：{做了什么修改}
    - **文件**：`{file-path}:{line-number}`
    - **验证**：{如何验证}
 
 #### 主要问题修复
-1. **{问题标题}**（来自 review.md）
+1. **{问题标题}**（来自 {review-artifact}）
    - **修复**：{做了什么修改}
    - **文件**：`{file-path}:{line-number}`
 
 #### 次要问题处理
-1. **{问题标题}**（来自 review.md）
+1. **{问题标题}**（来自 {review-artifact}）
    - **修复**：{做了什么修改}
 
 #### 未处理的问题
@@ -143,21 +157,23 @@ description: >
 - [ ] 修复了所有主要问题
 - [ ] 在适当情况下处理了次要问题
 - [ ] 修复后所有测试通过
-- [ ] 更新了 implementation.md 的修复记录
+- [ ] 更新了 `{implementation-artifact}` 的修复记录
 - [ ] 更新了 task.md 中的任务状态
 - [ ] 追加了 Activity Log 条目到 task.md
 - [ ] 告知了用户下一步（含 TUI 特定命令格式）
 
 ## 注意事项
 
-1. **前置条件**：必须有审查报告（review.md 存在）
+1. **前置条件**：必须有审查报告（`review.md` 或 `review-r{N}.md` 存在）
 2. **禁止自动提交**：不要自动执行 `git commit`。提醒用户手动提交
 3. **范围纪律**：仅修复审查中标记的问题 —— 不添加额外变更
 4. **不同意见**：如果不同意某个审查意见，在"未处理的问题"部分记录你的理由
 5. **重新审查**：修复阻塞项后，建议重新运行 review-task 技能进行验证
+6. **一致性要求**：最新审查产物、Activity Log 记录和修复记录标题必须引用同一轮次文件
 
 ## 错误处理
 
 - 任务未找到：提示 "Task {task-id} not found"
 - 缺少审查报告：提示 "Review report not found, please run the review-task skill first"
+- 审查产物不一致：提示 "Review artifact mismatch: Activity Log references {expected} but file not found. Please verify the review artifact exists."
 - 修复后测试失败：输出测试错误，询问用户如何处理

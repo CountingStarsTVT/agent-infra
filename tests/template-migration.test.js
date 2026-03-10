@@ -69,6 +69,14 @@ function loadFresh(relativePath) {
   return require(resolved);
 }
 
+function assertContainsPatterns(relativePath, patterns) {
+  const content = read(relativePath);
+
+  patterns.forEach((pattern) => {
+    assert.match(content, pattern, `${relativePath} should match ${pattern}`);
+  });
+}
+
 const commandSpecs = {
   "analyze-codescan": {
     usage: "<alert-number>",
@@ -426,6 +434,88 @@ test("update-ai-collaboration template copies stay in sync with working files", 
     const templatePath = langTemplate(target, lang);
     const rendered = renderPlaceholders(read(templatePath), { project, org });
     assert.equal(rendered, read(source), `${templatePath} is out of sync with ${source}`);
+  });
+});
+
+test("artifact versioning guidance exists in repeatable workflow skills", () => {
+  [
+    ".agents/skills/implement-task/SKILL.md",
+    "templates/.agents/skills/implement-task/SKILL.md",
+    "templates/.agents/skills/implement-task/SKILL.zh-CN.md"
+  ].forEach((relativePath) => {
+    assertContainsPatterns(relativePath, [
+      /implementation-r\{N\}\.md/,
+      /Implementation \(Round \{N\}\)/,
+      /\{implementation-artifact\}/
+    ]);
+  });
+
+  [
+    ".agents/skills/review-task/SKILL.md",
+    "templates/.agents/skills/review-task/SKILL.md",
+    "templates/.agents/skills/review-task/SKILL.zh-CN.md"
+  ].forEach((relativePath) => {
+    assertContainsPatterns(relativePath, [
+      /review-r\{N\}\.md/,
+      /implementation-r\{N\}\.md/,
+      /Code Review \(Round \{N\}\)/
+    ]);
+  });
+
+  [
+    ".agents/skills/refine-task/SKILL.md",
+    "templates/.agents/skills/refine-task/SKILL.md",
+    "templates/.agents/skills/refine-task/SKILL.zh-CN.md"
+  ].forEach((relativePath) => {
+    assertContainsPatterns(relativePath, [
+      /review-r\{N\}\.md/,
+      /Review artifact mismatch:/,
+      /\{implementation-artifact\}/
+    ]);
+  });
+
+  [
+    ".agents/skills/check-task/SKILL.md",
+    "templates/.agents/skills/check-task/SKILL.md",
+    "templates/.agents/skills/check-task/SKILL.zh-CN.md"
+  ].forEach((relativePath) => {
+    assertContainsPatterns(relativePath, [
+      /implementation-r2\.md/,
+      /review-r2\.md/,
+      /latest/
+    ]);
+  });
+
+  [
+    ".agents/skills/complete-task/SKILL.md",
+    "templates/.agents/skills/complete-task/SKILL.md",
+    "templates/.agents/skills/complete-task/SKILL.zh-CN.md"
+  ].forEach((relativePath) => {
+    assertContainsPatterns(relativePath, [
+      /review-r\{N\}\.md/,
+      /Approved/
+    ]);
+  });
+});
+
+test("workflows document artifact versioning for implementation, review, and fix loops", () => {
+  [
+    ".agents/workflows/feature-development.yaml",
+    ".agents/workflows/bug-fix.yaml",
+    ".agents/workflows/refactoring.yaml",
+    "templates/.agents/workflows/feature-development.yaml",
+    "templates/.agents/workflows/bug-fix.yaml",
+    "templates/.agents/workflows/refactoring.yaml",
+    "templates/.agents/workflows/feature-development.zh-CN.yaml",
+    "templates/.agents/workflows/bug-fix.zh-CN.yaml",
+    "templates/.agents/workflows/refactoring.zh-CN.yaml"
+  ].forEach((relativePath) => {
+    assertContainsPatterns(relativePath, [
+      /artifact_versioning:/,
+      /implementation-r\{N\}\.md/,
+      /review-r\{N\}\.md/,
+      /Activity Log/
+    ]);
   });
 });
 

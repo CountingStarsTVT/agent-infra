@@ -55,6 +55,11 @@ steps:
     inputs:
       - Fix approach from previous step
       - Project coding standards
+    artifact_versioning:
+      outputs:
+        - name: implementation
+          pattern: "implementation.md | implementation-r{N}.md"
+          rule: "Scan existing implementation artifacts; create implementation.md for Round 1, then implementation-r{N}.md for later re-implementations (N = highest existing round + 1)"
     outputs:
       - Bugfix branch with implementation
       - Regression test files
@@ -73,6 +78,15 @@ steps:
     inputs:
       - Bugfix branch
       - Root cause analysis
+    artifact_versioning:
+      inputs:
+        - name: implementation
+          pattern: "implementation.md | implementation-r{N}.md"
+          rule: "Read the highest-round implementation artifact as the review input"
+      outputs:
+        - name: review
+          pattern: "review.md | review-r{N}.md"
+          rule: "Scan existing review artifacts; create review.md for Round 1, then review-r{N}.md for later rounds (N = highest existing round + 1)"
     outputs:
       - Review report
       - List of issues (if any)
@@ -89,6 +103,15 @@ steps:
     inputs:
       - Review report
       - Bugfix branch
+    artifact_versioning:
+      inputs:
+        - name: review
+          pattern: "review.md | review-r{N}.md"
+          rule: "Read the highest-round review artifact and verify it matches the most recent Code Review entry in task.md Activity Log"
+      outputs:
+        - name: implementation
+          pattern: "implementation.md | implementation-r{N}.md"
+          rule: "Append the fix log to the highest-round implementation artifact and include the review artifact filename in the heading"
     outputs:
       - Updated branch with fixes
       - Updated task file

@@ -35,11 +35,16 @@ description: >
 
 ### 3. 检查上下文文件
 
-检查以下文件的存在和状态：
+按产物类型扫描并记录以下文件的存在、轮次和状态：
 - `analysis.md` - 需求分析
 - `plan.md` - 技术方案
-- `implementation.md` - 实现报告
-- `review.md` - 审查报告
+- `implementation.md`、`implementation-r2.md`、... - 实现报告
+- `review.md`、`review-r2.md`、... - 审查报告
+
+对于 `implementation` 和 `review`：
+- 扫描任务目录中的所有同类版本化文件
+- 记录每类产物的最新轮次、最新文件路径和总轮次数
+- 如果 `task.md` 的 Activity Log 记录了最新轮次，优先核对其与实际文件是否一致
 
 ### 4. 输出状态报告
 
@@ -61,15 +66,21 @@ description: >
 工作流进度：
   [已完成]    需求分析        analysis.md
   [已完成]    技术设计        plan.md
-  [进行中]    实现            implementation.md
-  [待处理]    代码审查        review.md
+  [进行中]    实现            implementation.md (Round 1)
+  [待处理]    代码审查        review.md (Round 1 will be created next)
   [待处理]    最终提交
 
 上下文文件：
 - analysis.md：       已存在
 - plan.md：           已存在
-- implementation.md：进行中
+- implementation.md：已存在 (Round 1, latest)
 - review.md：         未开始
+
+如果存在多轮产物，显示所有轮次，并标记最新版本，例如：
+- implementation.md：已存在 (Round 1)
+- implementation-r2.md：已存在 (Round 2, latest)
+- review.md：已存在 (Round 1)
+- review-r2.md：已存在 (Round 2, latest)
 
 下一步：
   完成实现，然后执行代码审查
@@ -101,3 +112,4 @@ description: >
 1. **只读**：本技能仅读取和报告 —— 不修改任何文件
 2. **多目录搜索**：始终检查 active、blocked 和 completed 目录
 3. **快速参考**：随时可以使用本技能检查任务在工作流中的位置
+4. **版本化产物**：`implementation` 与 `review` 需要报告实际轮次，而不是只报告固定文件名

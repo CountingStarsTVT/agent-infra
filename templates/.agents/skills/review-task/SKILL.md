@@ -11,7 +11,7 @@ description: >
 
 ## Boundary / Critical Rules
 
-- This skill only reads code and produces `review.md` -- it does not modify business code
+- This skill only reads code and produces a review artifact (`review.md` or `review-r{N}.md`) -- it does not modify business code
 - After executing this skill, you **must** immediately update task status in task.md
 
 ## Steps
@@ -20,15 +20,26 @@ description: >
 
 Check required files:
 - `.ai-workspace/active/{task-id}/task.md` - Task file
-- `.ai-workspace/active/{task-id}/implementation.md` - Implementation report
+- At least one implementation report: `implementation.md` or `implementation-r{N}.md`
 
 Note: `{task-id}` format is `TASK-{yyyyMMdd-HHmmss}`, e.g. `TASK-20260306-143022`
 
-If either file is missing, prompt the user to complete the prerequisite step first.
+If either requirement is missing, prompt the user to complete the prerequisite step first.
+
+### 1.5 Determine the Review Round
+
+Scan `.ai-workspace/active/{task-id}/` for review artifacts:
+- If neither `review.md` nor `review-r*.md` exists -> this is Round 1 and must create `review.md`
+- If `review.md` exists and no `review-r*.md` exists -> this is Round 2 and must create `review-r2.md`
+- If `review-r{N}.md` exists -> this is Round N+1 and must create `review-r{N+1}.md`
+
+Record:
+- `{review-round}`: the current review round
+- `{review-artifact}`: the review report filename for this round
 
 ### 2. Read Implementation Report
 
-Carefully read `implementation.md` to understand:
+Scan the task directory for implementation reports (`implementation.md`, `implementation-r{N}.md`) and read the highest-round artifact to understand:
 - List of modified files
 - Key functionality implemented
 - Test situation
@@ -57,7 +68,7 @@ Also review the `git diff` to see all changes in context.
 
 ### 4. Output Review Report
 
-Create `.ai-workspace/active/{task-id}/review.md`.
+Create `.ai-workspace/active/{task-id}/{review-artifact}`.
 
 ### 5. Update Task Status
 
@@ -65,11 +76,11 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - `current_step`: code-review
 - `assigned_to`: {reviewer}
 - `updated_at`: {current time}
-- Mark review.md as completed
-- Mark code-review as complete in workflow progress
+- Record the review artifact for this round: `{review-artifact}` (Round `{review-round}`)
+- Mark code-review as complete in workflow progress and include the actual round when the task template supports it
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Code Review** by {agent} — Verdict: {Approved/Changes Requested/Rejected}, Blockers: {n}, Major: {n}, Minor: {n}
+  - {yyyy-MM-dd HH:mm} — **Code Review (Round {N})** by {agent} — Verdict: {Approved/Changes Requested/Rejected}, Blockers: {n}, Major: {n}, Minor: {n} → {artifact-filename}
   ```
 
 ### 6. Inform User
@@ -91,7 +102,7 @@ Next step - commit changes:
 ```
 Code review complete for task {task-id}. Verdict: Changes Requested.
 - Blockers: {n} | Major: {n} | Minor: {n}
-- Report: .ai-workspace/active/{task-id}/review.md
+- Report: .ai-workspace/active/{task-id}/{review-artifact}
 
 Next step - fix issues:
   - Claude Code / OpenCode: /refine-task {task-id}
@@ -102,7 +113,7 @@ Next step - fix issues:
 **If rejected**:
 ```
 Code review complete for task {task-id}. Verdict: Rejected - needs major rework.
-- Report: .ai-workspace/active/{task-id}/review.md
+- Report: .ai-workspace/active/{task-id}/{review-artifact}
 
 Next step - re-implement:
   - Claude Code / OpenCode: /implement-task {task-id}
@@ -114,6 +125,10 @@ Next step - re-implement:
 
 ```markdown
 # Code Review Report
+
+- **Review round**: Round {review-round}
+- **Artifact file**: `{review-artifact}`
+- **Implementation input**: `{implementation-artifact}`
 
 ## Review Summary
 
@@ -209,7 +224,7 @@ Next step - re-implement:
 ## Completion Checklist
 
 - [ ] Completed code review of all modified files
-- [ ] Created review report `.ai-workspace/active/{task-id}/review.md`
+- [ ] Created review report `.ai-workspace/active/{task-id}/{review-artifact}`
 - [ ] Updated `current_step` to code-review in task.md
 - [ ] Updated `updated_at` to current time in task.md
 - [ ] Updated `assigned_to` to reviewer name in task.md
@@ -219,10 +234,11 @@ Next step - re-implement:
 
 ## Notes
 
-1. **Prerequisites**: Must have completed implementation (implementation.md exists)
+1. **Prerequisites**: At least one implementation artifact must exist (`implementation.md` or `implementation-r{N}.md`)
 2. **Objectivity**: Be strict but fair; acknowledge good work alongside issues
 3. **Specificity**: Always reference exact file paths and line numbers
 4. **Severity classification**: Blockers must be fixed; major issues should be fixed; minor issues are optional
+5. **Versioning rule**: First-round review uses `review.md`; later rounds use `review-r{N}.md`
 
 ## Error Handling
 

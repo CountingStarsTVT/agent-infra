@@ -31,7 +31,7 @@ If not found in `active/`, check `blocked/` and `completed/`:
 
 Before marking complete, verify ALL of these:
 - [ ] All workflow steps are complete (check workflow progress in task.md)
-- [ ] Code has been reviewed (review.md exists or review was done externally)
+- [ ] Code has been reviewed (`review.md` or `review-r{N}.md` exists, and the latest review verdict is Approved; or review was done externally)
 - [ ] Code has been committed (no uncommitted changes related to this task)
 - [ ] Tests are passing
 

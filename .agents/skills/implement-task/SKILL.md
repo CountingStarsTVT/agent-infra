@@ -11,6 +11,7 @@ description: >
 
 - 严格遵循 `plan.md` —— 不要偏离，除非记录了偏离原因
 - 不要自动提交。绝不自动执行 `git commit` 或 `git add`
+- 本技能产出实现报告（`implementation.md` 或 `implementation-r{N}.md`）—— 不覆盖已有轮次产物
 - 执行本技能后，你**必须**立即更新 task.md 中的任务状态
 
 ## 执行步骤
@@ -24,6 +25,19 @@ description: >
 注意：`{task-id}` 格式为 `TASK-{yyyyMMdd-HHmmss}`，例如 `TASK-20260306-143022`
 
 如果任一文件缺失，提示用户先完成前置步骤。
+
+### 1.5 确定实现轮次
+
+扫描 `.ai-workspace/active/{task-id}/` 目录中的实现报告文件：
+- 如果不存在 `implementation.md` 且不存在 `implementation-r*.md` → 本轮为第 1 轮，产出 `implementation.md`
+- 如果存在 `implementation.md` 且不存在 `implementation-r*.md` → 本轮为第 2 轮，产出 `implementation-r2.md`
+- 如果存在 `implementation-r{N}.md` → 本轮为第 N+1 轮，产出 `implementation-r{N+1}.md`
+
+记录：
+- `{implementation-round}`：本轮实现轮次
+- `{implementation-artifact}`：本轮实现报告文件名
+
+注意：仅在审查结论为“拒绝”后重新执行时才会进入多轮。正常首次实现始终产出 `implementation.md`。
 
 ### 2. 阅读技术方案
 
@@ -68,7 +82,12 @@ description: >
 
 ### 5. 输出实现报告
 
-创建 `.ai-workspace/active/{task-id}/implementation.md`。
+创建 `.ai-workspace/active/{task-id}/{implementation-artifact}`。
+
+要求：
+- 不要覆盖已有的实现报告
+- 在报告中明确记录本轮轮次编号和实际产物文件名
+- 如果本轮是重实现，说明其触发原因（例如上一轮审查结论为 Rejected）
 
 ### 6. 更新任务状态
 
@@ -76,11 +95,11 @@ description: >
 - `current_step`：implementation
 - `assigned_to`：{当前 AI 代理}
 - `updated_at`：{当前时间}
-- 标记 implementation.md 为已完成
-- 在工作流进度中标记 implementation 为已完成
+- 记录本轮实现产物：`{implementation-artifact}`（Round `{implementation-round}`）
+- 在工作流进度中标记 implementation 为已完成，并注明实际轮次（如果任务模板支持）
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Implementation** by {agent} — Code implemented, {n} files modified, {n} tests passed
+  - {yyyy-MM-dd HH:mm} — **Implementation (Round {N})** by {agent} — Code implemented, {n} files modified, {n} tests passed → {artifact-filename}
   ```
 
 ### 7. 告知用户
@@ -95,7 +114,7 @@ description: >
 - 测试通过：{数量}/{总数}
 
 产出文件：
-- 实现报告：.ai-workspace/active/{task-id}/implementation.md
+- 实现报告：.ai-workspace/active/{task-id}/{implementation-artifact}（Round {implementation-round}）
 
 下一步 - 代码审查：
   - Claude Code / OpenCode：/review-task {task-id}
@@ -107,6 +126,9 @@ description: >
 
 ```markdown
 # 实现报告
+
+- **实现轮次**：Round {implementation-round}
+- **产物文件**：`{implementation-artifact}`
 
 ## 修改文件
 
@@ -163,7 +185,7 @@ description: >
 ## 完成检查清单
 
 - [ ] 完成了所有代码实现
-- [ ] 创建了实现报告 `.ai-workspace/active/{task-id}/implementation.md`
+- [ ] 创建了实现报告 `.ai-workspace/active/{task-id}/{implementation-artifact}`
 - [ ] 所有测试通过
 - [ ] 更新了 task.md 中的 `current_step` 为 implementation
 - [ ] 更新了 task.md 中的 `updated_at` 为当前时间
@@ -183,6 +205,7 @@ description: >
 3. **测试要求**：所有新代码必须有单元测试；测试覆盖率不得下降
 4. **代码质量**：遵循项目编码规范
 5. **计划偏离**：如果需要偏离计划，在实现报告中记录原因
+6. **版本化规则**：首轮实现使用 `implementation.md`；后续重实现使用 `implementation-r{N}.md`
 
 ## 错误处理
 

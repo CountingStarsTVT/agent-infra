@@ -13,6 +13,7 @@ description: >
 
 - Strictly follow `plan.md` -- do not deviate without documenting the reason
 - Do NOT auto-commit. Never execute `git commit` or `git add` automatically
+- This skill outputs an implementation report (`implementation.md` or `implementation-r{N}.md`) and must never overwrite an existing round artifact
 - After executing this skill, you **must** immediately update task status in task.md
 
 ## Steps
@@ -26,6 +27,19 @@ Check required files:
 Note: `{task-id}` format is `TASK-{yyyyMMdd-HHmmss}`, e.g. `TASK-20260306-143022`
 
 If either file is missing, prompt the user to complete the prerequisite step first.
+
+### 1.5 Determine the Implementation Round
+
+Scan `.ai-workspace/active/{task-id}/` for implementation report files:
+- If neither `implementation.md` nor `implementation-r*.md` exists -> this is Round 1 and must create `implementation.md`
+- If `implementation.md` exists and no `implementation-r*.md` exists -> this is Round 2 and must create `implementation-r2.md`
+- If `implementation-r{N}.md` exists -> this is Round N+1 and must create `implementation-r{N+1}.md`
+
+Record:
+- `{implementation-round}`: the current implementation round
+- `{implementation-artifact}`: the implementation report filename for this round
+
+Note: multi-round implementation should only happen after a review verdict of Rejected. A normal first implementation always creates `implementation.md`.
 
 ### 2. Read Technical Plan
 
@@ -70,7 +84,12 @@ Ensure all tests pass. If tests fail, fix the issues before proceeding.
 
 ### 5. Output Implementation Report
 
-Create `.ai-workspace/active/{task-id}/implementation.md`.
+Create `.ai-workspace/active/{task-id}/{implementation-artifact}`.
+
+Requirements:
+- Do not overwrite any existing implementation report
+- Record the actual round number and artifact filename in the report
+- If this is a re-implementation round, explain what triggered it
 
 ### 6. Update Task Status
 
@@ -78,11 +97,11 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - `current_step`: implementation
 - `assigned_to`: {current AI agent}
 - `updated_at`: {current time}
-- Mark implementation.md as completed
-- Mark implementation as complete in workflow progress
+- Record the implementation artifact for this round: `{implementation-artifact}` (Round `{implementation-round}`)
+- Mark implementation as complete in workflow progress and include the actual round when the task template supports it
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Implementation** by {agent} — Code implemented, {n} files modified, {n} tests passed
+  - {yyyy-MM-dd HH:mm} — **Implementation (Round {N})** by {agent} — Code implemented, {n} files modified, {n} tests passed → {artifact-filename}
   ```
 
 ### 7. Inform User
@@ -97,7 +116,7 @@ Summary:
 - Tests passed: {count}/{total}
 
 Output file:
-- Implementation report: .ai-workspace/active/{task-id}/implementation.md
+- Implementation report: .ai-workspace/active/{task-id}/{implementation-artifact} (Round {implementation-round})
 
 Next step - code review:
   - Claude Code / OpenCode: /review-task {task-id}
@@ -109,6 +128,9 @@ Next step - code review:
 
 ```markdown
 # Implementation Report
+
+- **Implementation round**: Round {implementation-round}
+- **Artifact file**: `{implementation-artifact}`
 
 ## Modified Files
 
@@ -165,7 +187,7 @@ Next step - code review:
 ## Completion Checklist
 
 - [ ] Completed all code implementation
-- [ ] Created implementation report `.ai-workspace/active/{task-id}/implementation.md`
+- [ ] Created implementation report `.ai-workspace/active/{task-id}/{implementation-artifact}`
 - [ ] All tests pass
 - [ ] Updated `current_step` to implementation in task.md
 - [ ] Updated `updated_at` to current time in task.md
@@ -185,6 +207,7 @@ After completing the checklist, **stop**. Do not auto-commit. Wait for code revi
 3. **Test requirement**: All new code must have unit tests; test coverage must not decrease
 4. **Code quality**: Follow project coding standards
 5. **Plan deviation**: If you need to deviate from the plan, document the reason in the implementation report
+6. **Versioning rule**: First-round implementation uses `implementation.md`; later re-implementations use `implementation-r{N}.md`
 
 ## Error Handling
 

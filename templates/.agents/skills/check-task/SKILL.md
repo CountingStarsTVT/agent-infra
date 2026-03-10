@@ -37,11 +37,16 @@ From `task.md`, extract:
 
 ### 3. Check Context Files
 
-Check existence and status of:
+Scan and report the existence, round, and status of these artifact types:
 - `analysis.md` - Requirement analysis
 - `plan.md` - Technical plan
-- `implementation.md` - Implementation report
-- `review.md` - Review report
+- `implementation.md`, `implementation-r2.md`, ... - Implementation reports
+- `review.md`, `review-r2.md`, ... - Review reports
+
+For `implementation` and `review`:
+- Scan the task directory for every versioned artifact
+- Record the latest round, latest filename, and total rounds for each artifact type
+- When `task.md` Activity Log records the latest round, verify it matches the actual latest artifact
 
 ### 4. Output Status Report
 
@@ -63,15 +68,21 @@ Basic Info:
 Workflow Progress:
   [done]       Requirement Analysis    analysis.md
   [done]       Technical Design        plan.md
-  [current]    Implementation          implementation.md
-  [pending]    Code Review             review.md
+  [current]    Implementation          implementation.md (Round 1)
+  [pending]    Code Review             review.md (Round 1 will be created next)
   [pending]    Final Commit
 
 Context Files:
 - analysis.md:       exists
 - plan.md:           exists
-- implementation.md: in progress
+- implementation.md: exists (Round 1, latest)
 - review.md:         not started
+
+If multiple rounds exist, list every artifact and mark the latest one, for example:
+- implementation.md: exists (Round 1)
+- implementation-r2.md: exists (Round 2, latest)
+- review.md: exists (Round 1)
+- review-r2.md: exists (Round 2, latest)
 
 Next Step:
   Complete implementation, then run the review-task skill with {task-id}
@@ -103,3 +114,4 @@ Based on the current workflow state, suggest the appropriate next skill with TUI
 1. **Read-only**: This skill only reads and reports -- it does not modify any files
 2. **Multi-directory search**: Always check active, blocked, and completed directories
 3. **Quick reference**: Use this skill anytime to check where a task stands in the workflow
+4. **Versioned artifacts**: `implementation` and `review` must report real rounds instead of only fixed filenames

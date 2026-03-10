@@ -9,7 +9,7 @@ description: >
 
 ## 行为边界 / 关键规则
 
-- 本技能仅读取代码并产出 `review.md` —— 不修改业务代码
+- 本技能仅读取代码并产出审查报告（`review.md` 或 `review-r{N}.md`）—— 不修改业务代码
 - 执行本技能后，你**必须**立即更新 task.md 中的任务状态
 
 ## 执行步骤
@@ -18,15 +18,26 @@ description: >
 
 检查必要文件：
 - `.ai-workspace/active/{task-id}/task.md` - 任务文件
-- `.ai-workspace/active/{task-id}/implementation.md` - 实现报告
+- 至少一个实现报告：`implementation.md` 或 `implementation-r{N}.md`
 
 注意：`{task-id}` 格式为 `TASK-{yyyyMMdd-HHmmss}`，例如 `TASK-20260306-143022`
 
 如果任一文件缺失，提示用户先完成前置步骤。
 
+### 1.5 确定审查轮次
+
+扫描 `.ai-workspace/active/{task-id}/` 目录中的审查产物文件：
+- 如果不存在 `review.md` 且不存在 `review-r*.md` → 本轮为第 1 轮，产出 `review.md`
+- 如果存在 `review.md` 且不存在 `review-r*.md` → 本轮为第 2 轮，产出 `review-r2.md`
+- 如果存在 `review-r{N}.md` → 本轮为第 N+1 轮，产出 `review-r{N+1}.md`
+
+记录：
+- `{review-round}`：本轮审查轮次
+- `{review-artifact}`：本轮审查报告文件名
+
 ### 2. 阅读实现报告
 
-仔细阅读 `implementation.md` 以理解：
+扫描任务目录中的实现报告文件（`implementation.md`、`implementation-r{N}.md`），读取最高轮次的文件以理解：
 - 修改的文件列表
 - 实现的关键功能
 - 测试情况
@@ -55,7 +66,7 @@ description: >
 
 ### 4. 输出审查报告
 
-创建 `.ai-workspace/active/{task-id}/review.md`。
+创建 `.ai-workspace/active/{task-id}/{review-artifact}`。
 
 ### 5. 更新任务状态
 
@@ -63,11 +74,11 @@ description: >
 - `current_step`：code-review
 - `assigned_to`：{审查者}
 - `updated_at`：{当前时间}
-- 标记 review.md 为已完成
-- 在工作流进度中标记 code-review 为已完成
+- 记录本轮审查产物：`{review-artifact}`（Round `{review-round}`）
+- 在工作流进度中标记 code-review 为已完成，并注明实际轮次（如果任务模板支持）
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Code Review** by {agent} — Verdict: {Approved/Changes Requested/Rejected}, Blockers: {n}, Major: {n}, Minor: {n}
+  - {yyyy-MM-dd HH:mm} — **Code Review (Round {N})** by {agent} — Verdict: {Approved/Changes Requested/Rejected}, Blockers: {n}, Major: {n}, Minor: {n} → {artifact-filename}
   ```
 
 ### 6. 告知用户
@@ -89,7 +100,7 @@ description: >
 ```
 任务 {task-id} 代码审查完成。结论：需要修改。
 - 阻塞项：{n} | 主要问题：{n} | 次要问题：{n}
-- 审查报告：.ai-workspace/active/{task-id}/review.md
+- 审查报告：.ai-workspace/active/{task-id}/{review-artifact}
 
 下一步 - 修复问题：
   - Claude Code / OpenCode：/refine-task {task-id}
@@ -100,7 +111,7 @@ description: >
 **如果拒绝**：
 ```
 任务 {task-id} 代码审查完成。结论：拒绝，需要重大返工。
-- 审查报告：.ai-workspace/active/{task-id}/review.md
+- 审查报告：.ai-workspace/active/{task-id}/{review-artifact}
 
 下一步 - 重新实现：
   - Claude Code / OpenCode：/implement-task {task-id}
@@ -112,6 +123,10 @@ description: >
 
 ```markdown
 # 代码审查报告
+
+- **审查轮次**：Round {review-round}
+- **产物文件**：`{review-artifact}`
+- **实现输入**：`{implementation-artifact}`
 
 ## 审查摘要
 
@@ -207,7 +222,7 @@ description: >
 ## 完成检查清单
 
 - [ ] 完成了所有修改文件的代码审查
-- [ ] 创建了审查报告 `.ai-workspace/active/{task-id}/review.md`
+- [ ] 创建了审查报告 `.ai-workspace/active/{task-id}/{review-artifact}`
 - [ ] 更新了 task.md 中的 `current_step` 为 code-review
 - [ ] 更新了 task.md 中的 `updated_at` 为当前时间
 - [ ] 更新了 task.md 中的 `assigned_to` 为审查者名称
@@ -217,10 +232,11 @@ description: >
 
 ## 注意事项
 
-1. **前置条件**：必须已完成实现（implementation.md 存在）
+1. **前置条件**：必须已完成至少一轮实现（`implementation.md` 或 `implementation-r{N}.md` 存在）
 2. **客观性**：严格但公正；在指出问题的同时肯定优秀的工作
 3. **具体性**：始终引用准确的文件路径和行号
 4. **严重程度分类**：阻塞项必须修复；主要问题应该修复；次要问题为可选
+5. **版本化规则**：首轮审查使用 `review.md`；后续轮次使用 `review-r{N}.md`
 
 ## 错误处理
 

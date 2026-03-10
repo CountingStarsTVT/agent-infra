@@ -21,15 +21,24 @@ description: >
 
 Check required files:
 - `.ai-workspace/active/{task-id}/task.md` - Task file
-- `.ai-workspace/active/{task-id}/review.md` - Review report
+- At least one review artifact: `review.md` or `review-r{N}.md`
 
 Note: `{task-id}` format is `TASK-{yyyyMMdd-HHmmss}`, e.g. `TASK-20260306-143022`
 
-If either file is missing, prompt the user to complete the prerequisite step first.
+If `task.md` is missing or no review artifact exists, prompt the user to complete the prerequisite step first.
+
+Then perform discovery and consistency checks:
+1. Scan the task directory for review artifacts (`review.md`, `review-r{N}.md`)
+2. Select the highest-round review artifact as `{review-artifact}`
+3. Scan implementation reports (`implementation.md`, `implementation-r{N}.md`) and select the highest-round artifact as `{implementation-artifact}`
+4. **Consistency check**: compare the most recent Code Review entry in `## Activity Log` against the actual latest review artifact from step 2
+
+If Activity Log and files do not match, stop immediately with:
+`Review artifact mismatch: Activity Log references {expected} but file not found. Please verify the review artifact exists.`
 
 ### 2. Read Review Report
 
-Carefully read `review.md` to understand:
+Carefully read the latest review artifact `{review-artifact}` identified in Step 1 to understand:
 - All blocker issues (must fix)
 - All major issues (should fix)
 - Minor issues (optional optimizations)
@@ -70,7 +79,10 @@ Ensure all tests still pass after fixes.
 
 ### 6. Create Refinement Report
 
-Update `.ai-workspace/active/{task-id}/implementation.md` by appending a refinement section.
+Update `.ai-workspace/active/{task-id}/{implementation-artifact}` and append the fix section.
+
+Use this heading for the appended section:
+`## Fix Log (for {review-artifact})`
 
 ### 7. Update Task Status
 
@@ -80,7 +92,7 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - `updated_at`: {current time}
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Refinement** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
+  - {yyyy-MM-dd HH:mm} — **Refinement (for {review-artifact})** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
   ```
 
 ### 8. Inform User
@@ -94,6 +106,8 @@ Fixes applied:
 - Major issues fixed: {count}/{total}
 - Minor issues fixed: {count}/{total}
 - All tests pass: {Yes/No}
+- Review input: {review-artifact}
+- Updated artifact: {implementation-artifact}
 
 Next step - re-review or commit:
 - Re-review:
@@ -108,26 +122,26 @@ Next step - re-review or commit:
 
 ## Output Template
 
-Append to `implementation.md`:
+Append to `{implementation-artifact}`:
 
 ```markdown
-## Refinement Record
+## Fix Log (for {review-artifact})
 
-### Review Feedback Processing
+### Review Feedback Addressed
 
 #### Blockers Fixed
-1. **{Issue title}** (from review.md)
+1. **{Issue title}** (from {review-artifact})
    - **Fix**: {What was changed}
    - **File**: `{file-path}:{line-number}`
    - **Verification**: {How verified}
 
 #### Major Issues Fixed
-1. **{Issue title}** (from review.md)
+1. **{Issue title}** (from {review-artifact})
    - **Fix**: {What was changed}
    - **File**: `{file-path}:{line-number}`
 
 #### Minor Issues Addressed
-1. **{Issue title}** (from review.md)
+1. **{Issue title}** (from {review-artifact})
    - **Fix**: {What was changed}
 
 #### Issues Not Addressed
@@ -145,21 +159,23 @@ Append to `implementation.md`:
 - [ ] Fixed all major issues
 - [ ] Addressed minor issues where appropriate
 - [ ] All tests pass after fixes
-- [ ] Updated implementation.md with refinement record
+- [ ] Updated fix log in `{implementation-artifact}`
 - [ ] Updated task status in task.md
 - [ ] Appended entry to Activity Log in task.md
 - [ ] Informed user of next step with TUI-specific commands
 
 ## Notes
 
-1. **Prerequisites**: Must have a review report (review.md exists)
+1. **Prerequisites**: A review artifact must exist (`review.md` or `review-r{N}.md`)
 2. **No auto-commit**: Do NOT execute `git commit` automatically. Remind the user to commit manually
 3. **Scope discipline**: Only fix what was flagged in the review -- no additional changes
 4. **Disagreements**: If you disagree with a review comment, document your reasoning in the "Issues Not Addressed" section
 5. **Re-review**: After fixing blockers, it is recommended to re-run the review-task skill to verify
+6. **Consistency requirement**: The latest review artifact, Activity Log entry, and appended fix log heading must all reference the same review file
 
 ## Error Handling
 
 - Task not found: Prompt "Task {task-id} not found"
 - Missing review report: Prompt "Review report not found, please run the review-task skill first"
+- Review artifact mismatch: Prompt "Review artifact mismatch: Activity Log references {expected} but file not found. Please verify the review artifact exists."
 - Test failure after fix: Output test errors, ask user how to proceed
