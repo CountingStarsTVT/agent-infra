@@ -93,6 +93,17 @@ description: >
 
 ## 步骤 7：更新 collaborator.json
 
+### 自更新检测
+
+在更新 `templateVersion` 之前，比较当前项目与 `~/.ai-collaboration-installer/` 的 git remote URL。
+如果两者一致（即当前项目就是模板源仓库本身），且步骤 4-6 未产生任何文件变更，
+则跳过 `templateVersion` 更新，报告项目已是最新状态。
+
+> **原因**：模板源仓库自身存在版本追踪死循环 —— 更新 templateVersion → 提交 → SHA 变化 →
+> 下次更新又需要改 templateVersion。当无实质文件变更时，跳过此字段即可打破循环。
+
+### 常规更新
+
 更新 `templateVersion` 为模板源当前版本（步骤 2 记录的 commit SHA）。
 除非用户明确要求迁移模板目录，否则保持 `templateSource` 不变。
 

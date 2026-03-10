@@ -105,6 +105,20 @@ If the local file exists, compare the rendered template with the local file:
 
 ## Step 7: Update collaborator.json
 
+### Self-update detection
+
+Before updating `templateVersion`, compare the current project's git remote URL
+with `~/.ai-collaboration-installer/`'s remote URL. If they match (i.e., the
+project IS the template source repository), and steps 4-6 produced no file
+changes, skip the `templateVersion` update and report the project as up-to-date.
+
+> **Rationale**: The template source repo has a version tracking loop —
+> updating templateVersion → commit → SHA changes → next update needs to change
+> templateVersion again. When no substantive file changes occurred, skipping
+> this field breaks the cycle.
+
+### Regular update
+
 Set `templateVersion` to the template source's current commit SHA
 (recorded in Step 2).
 Keep `templateSource` unchanged unless the user explicitly wants to move
