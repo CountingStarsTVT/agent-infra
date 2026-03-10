@@ -60,7 +60,7 @@ Based on the `language` field:
 
 Template files use two types of placeholders:
 
-**Content placeholders**: The words `project` and `org` wrapped in curly braces
+**Content placeholders**: Double-brace placeholders for `project` and `org`
 within the template text. During rendering, replace them with the actual values
 from collaborator.json's `project` and `org` fields.
 

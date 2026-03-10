@@ -96,11 +96,11 @@ description: >
 下一步 - 重新审查或提交：
 - 重新审查：
   - Claude Code / OpenCode：/review-task {task-id}
-  - Gemini CLI：/{project}:review-task {task-id}
+  - Gemini CLI：/{{project}}:review-task {task-id}
   - Codex CLI：$review-task {task-id}
 - 直接提交：
   - Claude Code / OpenCode：/commit
-  - Gemini CLI：/{project}:commit
+  - Gemini CLI：/{{project}}:commit
   - Codex CLI：$commit
 ```
 

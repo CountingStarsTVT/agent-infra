@@ -17,6 +17,18 @@ function read(relativePath) {
   return fs.readFileSync(filePath(relativePath), "utf8");
 }
 
+function listFilesRecursive(relativeDir) {
+  const entries = fs.readdirSync(filePath(relativeDir), { withFileTypes: true });
+
+  return entries.flatMap((entry) => {
+    const relativePath = path.join(relativeDir, entry.name);
+    if (entry.isDirectory()) {
+      return listFilesRecursive(relativePath);
+    }
+    return [relativePath];
+  });
+}
+
 function listSkillNames() {
   return fs.readdirSync(filePath(".agents/skills"), { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -35,8 +47,8 @@ function langTemplate(basePath, lang) {
 
 function renderPlaceholders(content, replacements) {
   return content
-    .replace(/\{project\}/g, replacements.project)
-    .replace(/\{org\}/g, replacements.org);
+    .replace(/\{\{project\}\}/g, replacements.project)
+    .replace(/\{\{org\}\}/g, replacements.org);
 }
 
 function buildCommandSyncFiles(project) {
@@ -202,6 +214,25 @@ test("required template files were migrated into templates/", () => {
   });
 });
 
+test("templates do not contain legacy single-brace project or org placeholders", () => {
+  const templateFiles = listFilesRecursive("templates");
+
+  templateFiles.forEach((relativePath) => {
+    const content = read(relativePath);
+
+    assert.doesNotMatch(
+      content,
+      /(?<!\{)\{project\}(?!\})/,
+      `${relativePath} should not contain legacy {project} placeholders`
+    );
+    assert.doesNotMatch(
+      content,
+      /(?<!\{)\{org\}(?!\})/,
+      `${relativePath} should not contain legacy {org} placeholders`
+    );
+  });
+});
+
 test("init-project files have been removed", () => {
   const removedFiles = [
     ".agents/skills/init-project/SKILL.md",
@@ -358,6 +389,15 @@ test("update-ai-collaboration template copies stay in sync with working files", 
   });
 });
 
+test("renderPlaceholders only replaces double-brace placeholders", () => {
+  const rendered = renderPlaceholders(
+    "literal {project} {{project}} {org} {{org}}",
+    { project: "demo", org: "acme" }
+  );
+
+  assert.equal(rendered, "literal {project} demo {org} acme");
+});
+
 test("ai-collaboration-installer init generates seed files in a temp directory", () => {
   const os = require("node:os");
   const { execSync } = require("node:child_process");
@@ -418,8 +458,8 @@ test("ai-collaboration-installer init generates seed files in a temp directory",
     const skill = fs.readFileSync(
       path.join(tmpDir, ".agents/skills/update-ai-collaboration/SKILL.md"), "utf8"
     );
-    assert.doesNotMatch(skill, /\{project\}/, "skill should not contain unrendered {project}");
-    assert.doesNotMatch(skill, /\{org\}/, "skill should not contain unrendered {org}");
+    assert.doesNotMatch(skill, /\{\{project\}\}/, "skill should not contain unrendered {{project}}");
+    assert.doesNotMatch(skill, /\{\{org\}\}/, "skill should not contain unrendered {{org}}");
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }

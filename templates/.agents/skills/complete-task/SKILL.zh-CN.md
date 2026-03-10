@@ -76,7 +76,7 @@ ls .ai-workspace/completed/{task-id}/task.md
 ```
 （可选）同步完成状态到 GitHub Issue：
   - Claude Code / OpenCode：/sync-issue {task-id}
-  - Gemini CLI：/{project}:sync-issue {task-id}
+  - Gemini CLI：/{{project}}:sync-issue {task-id}
   - Codex CLI：$sync-issue {task-id}
 ```
 

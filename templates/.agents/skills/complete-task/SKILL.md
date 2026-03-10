@@ -78,7 +78,7 @@ If the task has an `issue_number` field, optionally sync the completion status:
 ```
 (Optional) Sync completion status to the GitHub Issue:
   - Claude Code / OpenCode: /sync-issue {task-id}
-  - Gemini CLI: /{project}:sync-issue {task-id}
+  - Gemini CLI: /{{project}}:sync-issue {task-id}
   - Codex CLI: $sync-issue {task-id}
 ```
 

@@ -127,7 +127,7 @@ EOF
 ```
 下一步 - 完成并归档任务：
   - Claude Code / OpenCode：/complete-task {task-id}
-  - Gemini CLI：/{project}:complete-task {task-id}
+  - Gemini CLI：/{{project}}:complete-task {task-id}
   - Codex CLI：$complete-task {task-id}
 ```
 
@@ -148,7 +148,7 @@ EOF
 ```
 下一步 - 代码审查：
   - Claude Code / OpenCode：/review-task {task-id}
-  - Gemini CLI：/{project}:review-task {task-id}
+  - Gemini CLI：/{{project}}:review-task {task-id}
   - Codex CLI：$review-task {task-id}
 ```
 
@@ -162,7 +162,7 @@ EOF
 ```
 下一步 - 创建 Pull Request：
   - Claude Code / OpenCode：/create-pr
-  - Gemini CLI：/{project}:create-pr
+  - Gemini CLI：/{{project}}:create-pr
   - Codex CLI：$create-pr
 ```
 

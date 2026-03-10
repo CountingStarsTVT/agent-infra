@@ -53,6 +53,6 @@ After tests pass, suggest committing the changes:
 ```
 Next step - commit changes:
   - Claude Code / OpenCode: /commit
-  - Gemini CLI: /{project}:commit
+  - Gemini CLI: /{{project}}:commit
   - Codex CLI: $commit
 ```

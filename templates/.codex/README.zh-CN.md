@@ -1,4 +1,4 @@
-# Codex Skills（{project}）
+# Codex Skills（{{project}}）
 
 本项目使用 Codex 原生 skills。
 

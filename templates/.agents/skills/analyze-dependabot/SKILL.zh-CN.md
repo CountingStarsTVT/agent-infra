@@ -154,11 +154,11 @@ ghsa_id: <GHSA-ID>
 下一步：
 - 修复：
   - Claude Code / OpenCode：/plan-task {task-id}
-  - Gemini CLI：/{project}:plan-task {task-id}
+  - Gemini CLI：/{{project}}:plan-task {task-id}
   - Codex CLI：$plan-task {task-id}
 - 不适用：
   - Claude Code / OpenCode：/close-dependabot {alert-number}
-  - Gemini CLI：/{project}:close-dependabot {alert-number}
+  - Gemini CLI：/{{project}}:close-dependabot {alert-number}
   - Codex CLI：$close-dependabot {alert-number}
 ```
 

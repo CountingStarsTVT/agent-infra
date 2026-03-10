@@ -18,7 +18,7 @@ node --test tests/*.test.js
 ## 编码规范（必须遵守）
 
 - Shell 脚本保持 POSIX sh 兼容，使用 `set -e` 进行错误处理
-- 模板文件使用 `{project}` 和 `{org}` 作为渲染占位符
+- 模板文件使用 `{{project}}` 和 `{{org}}` 作为渲染占位符
 - Markdown 文件提供双语版本（英文为主 + 中文翻译）
 
 ### 版权头更新规则

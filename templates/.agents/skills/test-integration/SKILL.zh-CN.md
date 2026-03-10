@@ -54,7 +54,7 @@ description: >
 ```
 下一步 - 提交代码：
   - Claude Code / OpenCode：/commit
-  - Gemini CLI：/{project}:commit
+  - Gemini CLI：/{{project}}:commit
   - Codex CLI：$commit
 ```
 

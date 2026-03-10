@@ -156,11 +156,11 @@ Code Scanning 告警 #{alert-number} 分析完成。
 下一步：
 - 修复：
   - Claude Code / OpenCode：/plan-task {task-id}
-  - Gemini CLI：/{project}:plan-task {task-id}
+  - Gemini CLI：/{{project}}:plan-task {task-id}
   - Codex CLI：$plan-task {task-id}
 - 误报：
   - Claude Code / OpenCode：/close-codescan {alert-number}
-  - Gemini CLI：/{project}:close-codescan {alert-number}
+  - Gemini CLI：/{{project}}:close-codescan {alert-number}
   - Codex CLI：$close-codescan {alert-number}
 ```
 

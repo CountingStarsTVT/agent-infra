@@ -88,11 +88,11 @@ description: >
 
 | 当前状态 | Claude Code / OpenCode | Gemini CLI | Codex CLI |
 |---------|----------------------|------------|-----------|
-| 分析完成 | `/plan-task {task-id}` | `/{project}:plan-task {task-id}` | `$plan-task {task-id}` |
-| 计划完成 | `/implement-task {task-id}` | `/{project}:implement-task {task-id}` | `$implement-task {task-id}` |
-| 实现完成 | `/review-task {task-id}` | `/{project}:review-task {task-id}` | `$review-task {task-id}` |
-| 审查通过 | `/commit` | `/{project}:commit` | `$commit` |
-| 审查有问题 | `/refine-task {task-id}` | `/{project}:refine-task {task-id}` | `$refine-task {task-id}` |
+| 分析完成 | `/plan-task {task-id}` | `/{{project}}:plan-task {task-id}` | `$plan-task {task-id}` |
+| 计划完成 | `/implement-task {task-id}` | `/{{project}}:implement-task {task-id}` | `$implement-task {task-id}` |
+| 实现完成 | `/review-task {task-id}` | `/{{project}}:review-task {task-id}` | `$review-task {task-id}` |
+| 审查通过 | `/commit` | `/{{project}}:commit` | `$commit` |
+| 审查有问题 | `/refine-task {task-id}` | `/{{project}}:refine-task {task-id}` | `$refine-task {task-id}` |
 | 任务被阻塞 | 解除阻塞或提供所需信息 | — | 解除阻塞或提供所需信息 |
 | 任务已完成 | 无需操作 | — | 无需操作 |
 

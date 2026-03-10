@@ -155,11 +155,11 @@ Output files:
 Next step:
 - To fix:
   - Claude Code / OpenCode: /plan-task {task-id}
-  - Gemini CLI: /{project}:plan-task {task-id}
+  - Gemini CLI: /{{project}}:plan-task {task-id}
   - Codex CLI: $plan-task {task-id}
 - If not applicable:
   - Claude Code / OpenCode: /close-dependabot {alert-number}
-  - Gemini CLI: /{project}:close-dependabot {alert-number}
+  - Gemini CLI: /{{project}}:close-dependabot {alert-number}
   - Codex CLI: $close-dependabot {alert-number}
 ```
 

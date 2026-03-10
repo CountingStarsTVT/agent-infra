@@ -49,7 +49,7 @@ CLI 会交互式收集项目信息（名称、组织、语言等），安装 `up
 |-----|------|
 | Claude Code | `/update-ai-collaboration` |
 | Codex | `$update-ai-collaboration` |
-| Gemini CLI | `/{project}:update-ai-collaboration` |
+| Gemini CLI | `/{{project}}:update-ai-collaboration` |
 | OpenCode | `/update-ai-collaboration` |
 
 该命令会拉取最新模板并渲染所有文件。后续更新使用同一命令——自动处理首次安装和增量更新。

@@ -99,7 +99,7 @@ description: >
 
 下一步 - 代码审查：
   - Claude Code / OpenCode：/review-task {task-id}
-  - Gemini CLI：/{project}:review-task {task-id}
+  - Gemini CLI：/{{project}}:review-task {task-id}
   - Codex CLI：$review-task {task-id}
 ```
 

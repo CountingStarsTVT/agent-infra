@@ -98,7 +98,7 @@ Please review the technical plan before proceeding to implementation.
 
 Next step - implement the task:
   - Claude Code / OpenCode: /implement-task {task-id}
-  - Gemini CLI: /{project}:implement-task {task-id}
+  - Gemini CLI: /{{project}}:implement-task {task-id}
   - Codex CLI: $implement-task {task-id}
 ```
 

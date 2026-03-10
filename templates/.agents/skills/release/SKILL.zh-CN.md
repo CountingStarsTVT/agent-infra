@@ -87,7 +87,7 @@ Next steps (manual):
 
 3.（可选）生成发布说明：
    - Claude Code / OpenCode：/create-release-note {version}
-   - Gemini CLI：/{project}:create-release-note {version}
+   - Gemini CLI：/{{project}}:create-release-note {version}
    - Codex CLI：$create-release-note {version}
 ```
 

@@ -96,11 +96,11 @@ PR created: {pr-url}
 Next steps (if in task workflow):
 - Sync progress:
   - Claude Code / OpenCode: /sync-pr {task-id}
-  - Gemini CLI: /{project}:sync-pr {task-id}
+  - Gemini CLI: /{{project}}:sync-pr {task-id}
   - Codex CLI: $sync-pr {task-id}
 - Complete task:
   - Claude Code / OpenCode: /complete-task {task-id}
-  - Gemini CLI: /{project}:complete-task {task-id}
+  - Gemini CLI: /{{project}}:complete-task {task-id}
   - Codex CLI: $complete-task {task-id}
 ```
 

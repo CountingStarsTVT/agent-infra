@@ -69,7 +69,7 @@ ls .ai-workspace/blocked/{task-id}/task.md
 ```
 （可选）同步阻塞状态到 Issue：
   - Claude Code / OpenCode：/sync-issue {task-id}
-  - Gemini CLI：/{project}:sync-issue {task-id}
+  - Gemini CLI：/{{project}}:sync-issue {task-id}
   - Codex CLI：$sync-issue {task-id}
 ```
 

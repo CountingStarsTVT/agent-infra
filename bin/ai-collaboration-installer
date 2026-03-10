@@ -174,8 +174,8 @@ cmd_init() {
       err "Template file not found: $_src"
       return 1
     fi
-    sed -e "s/{project}/$SED_PROJECT/g" \
-        -e "s/{org}/$SED_ORG/g" \
+    sed -e "s/{{project}}/$SED_PROJECT/g" \
+        -e "s/{{org}}/$SED_ORG/g" \
         "$_src" > "$_dst"
   }
 

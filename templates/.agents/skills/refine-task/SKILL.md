@@ -98,11 +98,11 @@ Fixes applied:
 Next step - re-review or commit:
 - Re-review:
   - Claude Code / OpenCode: /review-task {task-id}
-  - Gemini CLI: /{project}:review-task {task-id}
+  - Gemini CLI: /{{project}}:review-task {task-id}
   - Codex CLI: $review-task {task-id}
 - Commit directly:
   - Claude Code / OpenCode: /commit
-  - Gemini CLI: /{project}:commit
+  - Gemini CLI: /{{project}}:commit
   - Codex CLI: $commit
 ```
 

@@ -101,7 +101,7 @@ Output file:
 
 Next step - code review:
   - Claude Code / OpenCode: /review-task {task-id}
-  - Gemini CLI: /{project}:review-task {task-id}
+  - Gemini CLI: /{{project}}:review-task {task-id}
   - Codex CLI: $review-task {task-id}
 ```
 

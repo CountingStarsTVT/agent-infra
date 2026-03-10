@@ -49,7 +49,7 @@ Open the project in any AI TUI and run `update-ai-collaboration`:
 |-----|---------|
 | Claude Code | `/update-ai-collaboration` |
 | Codex | `$update-ai-collaboration` |
-| Gemini CLI | `/{project}:update-ai-collaboration` |
+| Gemini CLI | `/{{project}}:update-ai-collaboration` |
 | OpenCode | `/update-ai-collaboration` |
 
 This pulls the latest templates and renders all files. Use the same command for future updates — it automatically handles both first-time setup and incremental updates.

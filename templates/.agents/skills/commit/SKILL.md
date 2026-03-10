@@ -128,7 +128,7 @@ Suggest next step:
 ```
 Next step - complete and archive the task:
   - Claude Code / OpenCode: /complete-task {task-id}
-  - Gemini CLI: /{project}:complete-task {task-id}
+  - Gemini CLI: /{{project}}:complete-task {task-id}
   - Codex CLI: $complete-task {task-id}
 ```
 
@@ -149,7 +149,7 @@ Suggest next step:
 ```
 Next step - code review:
   - Claude Code / OpenCode: /review-task {task-id}
-  - Gemini CLI: /{project}:review-task {task-id}
+  - Gemini CLI: /{{project}}:review-task {task-id}
   - Codex CLI: $review-task {task-id}
 ```
 
@@ -163,7 +163,7 @@ Suggest next step:
 ```
 Next step - create a Pull Request:
   - Claude Code / OpenCode: /create-pr
-  - Gemini CLI: /{project}:create-pr
+  - Gemini CLI: /{{project}}:create-pr
   - Codex CLI: $create-pr
 ```
 

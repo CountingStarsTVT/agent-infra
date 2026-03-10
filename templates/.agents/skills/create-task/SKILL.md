@@ -158,7 +158,7 @@ Output files:
 
 Next step - review the analysis, then design the technical plan:
   - Claude Code / OpenCode: /plan-task {task-id}
-  - Gemini CLI: /{project}:plan-task {task-id}
+  - Gemini CLI: /{{project}}:plan-task {task-id}
   - Codex CLI: $plan-task {task-id}
 ```
 

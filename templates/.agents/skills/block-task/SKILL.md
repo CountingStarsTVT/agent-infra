@@ -70,7 +70,7 @@ If the task has an `issue_number`, suggest syncing:
 ```
 (Optional) Sync the blocking status to the Issue:
   - Claude Code / OpenCode: /sync-issue {task-id}
-  - Gemini CLI: /{project}:sync-issue {task-id}
+  - Gemini CLI: /{{project}}:sync-issue {task-id}
   - Codex CLI: $sync-issue {task-id}
 ```
 

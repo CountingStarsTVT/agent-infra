@@ -90,11 +90,11 @@ Based on the current workflow state, suggest the appropriate next skill with TUI
 
 | Current State | Claude Code / OpenCode | Gemini CLI | Codex CLI |
 |--------------|------------------------|------------|-----------|
-| analysis complete | `/plan-task {task-id}` | `/{project}:plan-task {task-id}` | `$plan-task {task-id}` |
-| plan complete | `/implement-task {task-id}` | `/{project}:implement-task {task-id}` | `$implement-task {task-id}` |
-| implementation complete | `/review-task {task-id}` | `/{project}:review-task {task-id}` | `$review-task {task-id}` |
-| review passed | `/commit` | `/{project}:commit` | `$commit` |
-| review has issues | `/refine-task {task-id}` | `/{project}:refine-task {task-id}` | `$refine-task {task-id}` |
+| analysis complete | `/plan-task {task-id}` | `/{{project}}:plan-task {task-id}` | `$plan-task {task-id}` |
+| plan complete | `/implement-task {task-id}` | `/{{project}}:implement-task {task-id}` | `$implement-task {task-id}` |
+| implementation complete | `/review-task {task-id}` | `/{{project}}:review-task {task-id}` | `$review-task {task-id}` |
+| review passed | `/commit` | `/{{project}}:commit` | `$commit` |
+| review has issues | `/refine-task {task-id}` | `/{{project}}:refine-task {task-id}` | `$refine-task {task-id}` |
 | task blocked | Unblock or provide required info | — | Unblock or provide required info |
 | task completed | No action needed | — | No action needed |
 

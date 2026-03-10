@@ -83,7 +83,7 @@ Code review complete for task {task-id}. Verdict: Approved.
 
 Next step - commit changes:
   - Claude Code / OpenCode: /commit
-  - Gemini CLI: /{project}:commit
+  - Gemini CLI: /{{project}}:commit
   - Codex CLI: $commit
 ```
 
@@ -95,7 +95,7 @@ Code review complete for task {task-id}. Verdict: Changes Requested.
 
 Next step - fix issues:
   - Claude Code / OpenCode: /refine-task {task-id}
-  - Gemini CLI: /{project}:refine-task {task-id}
+  - Gemini CLI: /{{project}}:refine-task {task-id}
   - Codex CLI: $refine-task {task-id}
 ```
 
@@ -106,7 +106,7 @@ Code review complete for task {task-id}. Verdict: Rejected - needs major rework.
 
 Next step - re-implement:
   - Claude Code / OpenCode: /implement-task {task-id}
-  - Gemini CLI: /{project}:implement-task {task-id}
+  - Gemini CLI: /{{project}}:implement-task {task-id}
   - Codex CLI: $implement-task {task-id}
 ```
 

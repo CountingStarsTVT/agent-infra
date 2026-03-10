@@ -157,11 +157,11 @@ Task info:
 Next step:
 - To fix:
   - Claude Code / OpenCode: /plan-task {task-id}
-  - Gemini CLI: /{project}:plan-task {task-id}
+  - Gemini CLI: /{{project}}:plan-task {task-id}
   - Codex CLI: $plan-task {task-id}
 - If false positive:
   - Claude Code / OpenCode: /close-codescan {alert-number}
-  - Gemini CLI: /{project}:close-codescan {alert-number}
+  - Gemini CLI: /{{project}}:close-codescan {alert-number}
   - Codex CLI: $close-codescan {alert-number}
 ```
 
