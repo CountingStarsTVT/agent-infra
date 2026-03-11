@@ -43,6 +43,12 @@ Please complete the missing steps first, or use --force to override.
 
 ### 3. 更新任务元数据
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 更新 `.ai-workspace/active/{task-id}/task.md`：
 - `status`：completed
 - `completed_at`：{当前时间戳}
@@ -50,7 +56,7 @@ Please complete the missing steps first, or use --force to override.
 - 标记所有工作流步骤为已完成
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Completed** by {agent} — Task archived to completed/
+  - {yyyy-MM-dd HH:mm:ss} — **Completed** by {agent} — Task archived to completed/
   ```
 
 ### 4. 归档任务

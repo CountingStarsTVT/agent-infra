@@ -80,12 +80,18 @@ EOF
 
 ### 8. Update Task Status (If Task-Related)
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 If there is an active task for this work, update `.ai-workspace/active/{task-id}/task.md`:
 - `pr_number`: {pr-number}
 - `updated_at`: {current time}
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **PR Created** by {agent} — PR #{pr-number} created
+  - {yyyy-MM-dd HH:mm:ss} — **PR Created** by {agent} — PR #{pr-number} created
   ```
 
 ### 9. Output Result

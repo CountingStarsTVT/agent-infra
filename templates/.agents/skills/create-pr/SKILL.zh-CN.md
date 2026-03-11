@@ -79,12 +79,18 @@ EOF
 
 ### 8. 更新任务状态（如果与任务相关）
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 如果有关联的活跃任务，更新 `.ai-workspace/active/{task-id}/task.md`：
 - `pr_number`：{pr-number}
 - `updated_at`：{当前时间}
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **PR Created** by {agent} — PR #{pr-number} created
+  - {yyyy-MM-dd HH:mm:ss} — **PR Created** by {agent} — PR #{pr-number} created
   ```
 
 ### 9. 输出结果

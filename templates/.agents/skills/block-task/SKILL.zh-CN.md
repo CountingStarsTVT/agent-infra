@@ -40,13 +40,19 @@ description: >
 
 ### 3. 更新任务元数据
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 更新 `.ai-workspace/active/{task-id}/task.md`：
 - `status`：blocked
 - `blocked_at`：{当前时间戳}
 - `updated_at`：{当前时间戳}
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Blocked** by {agent} — {一行原因}
+  - {yyyy-MM-dd HH:mm:ss} — **Blocked** by {agent} — {一行原因}
   ```
 
 在 task.md 中添加阻塞信息部分。

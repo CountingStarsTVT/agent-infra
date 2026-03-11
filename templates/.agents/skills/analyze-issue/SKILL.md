@@ -104,6 +104,12 @@ Create `.ai-workspace/active/{task-id}/analysis.md`:
 
 ### 6. Update Task Status
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update `.ai-workspace/active/{task-id}/task.md`:
 - `current_step`: requirement-analysis
 - `assigned_to`: ai
@@ -112,7 +118,7 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - Mark requirement-analysis as complete in workflow progress
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Requirement Analysis** by {agent} — Issue #{number} analyzed
+  - {yyyy-MM-dd HH:mm:ss} — **Requirement Analysis** by {agent} — Issue #{number} analyzed
   ```
 
 ### 7. Inform User

@@ -93,6 +93,12 @@ Requirements:
 
 ### 6. Update Task Status
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update `.ai-workspace/active/{task-id}/task.md`:
 - `current_step`: implementation
 - `assigned_to`: {current AI agent}
@@ -101,7 +107,7 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - Mark implementation as complete in workflow progress and include the actual round when the task template supports it
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Implementation (Round {N})** by {agent} — Code implemented, {n} files modified, {n} tests passed → {artifact-filename}
+  - {yyyy-MM-dd HH:mm:ss} — **Implementation (Round {N})** by {agent} — Code implemented, {n} files modified, {n} tests passed → {artifact-filename}
   ```
 
 ### 7. Inform User

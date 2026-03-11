@@ -135,11 +135,17 @@ EOF
 
 ## Step 4: Update Task Status (If Task-Related)
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 After committing, update task status based on the situation:
 
 For all cases below, **append** to `## Activity Log` in task.md (do NOT overwrite previous entries):
 ```
-- {yyyy-MM-dd HH:mm} — **Commit** by {agent} — {commit hash short} {commit subject}
+- {yyyy-MM-dd HH:mm:ss} — **Commit** by {agent} — {commit hash short} {commit subject}
 ```
 
 ### Case 1: Final Commit (Task Complete)

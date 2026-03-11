@@ -77,6 +77,14 @@ function assertContainsPatterns(relativePath, patterns) {
   });
 }
 
+function skillDocPaths(skill) {
+  return [
+    `.agents/skills/${skill}/SKILL.md`,
+    `templates/.agents/skills/${skill}/SKILL.md`,
+    `templates/.agents/skills/${skill}/SKILL.zh-CN.md`
+  ].filter(exists);
+}
+
 const commandSpecs = {
   "analyze-codescan": {
     usage: "<alert-number>",
@@ -516,6 +524,38 @@ test("workflows document artifact versioning for implementation, review, and fix
       /review-r\{N\}\.md/,
       /Activity Log/
     ]);
+  });
+});
+
+test("skills that write timestamps require date command guidance", () => {
+  const timestampSkills = [
+    "analyze-codescan",
+    "analyze-dependabot",
+    "analyze-issue",
+    "block-task",
+    "close-codescan",
+    "close-dependabot",
+    "commit",
+    "complete-task",
+    "create-pr",
+    "create-task",
+    "implement-task",
+    "plan-task",
+    "refine-task",
+    "review-task",
+    "sync-issue",
+    "sync-pr"
+  ];
+
+  timestampSkills.forEach((skill) => {
+    skillDocPaths(skill).forEach((relativePath) => {
+      const content = read(relativePath);
+      assert.match(
+        content,
+        /date "\+%Y-%m-%d %H:%M:%S"/,
+        `${relativePath} should require the date command for timestamp writes`
+      );
+    });
   });
 });
 

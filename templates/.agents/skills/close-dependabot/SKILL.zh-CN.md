@@ -87,10 +87,16 @@ gh api --method PATCH \
 ### 7. 记录到任务（如存在）
 
 如果有关联任务（搜索 `security_alert_number: <alert-number>`）：
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 - 添加关闭记录到 task.md
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Alert Closed** by {agent} — Dependabot alert #{alert-number} dismissed: {reason}
+  - {yyyy-MM-dd HH:mm:ss} — **Alert Closed** by {agent} — Dependabot alert #{alert-number} dismissed: {reason}
   ```
 - 归档任务
 

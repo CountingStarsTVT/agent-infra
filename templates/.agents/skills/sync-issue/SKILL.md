@@ -92,10 +92,16 @@ EOF
 
 ### 6. Update Task Status
 
-Add or update `last_synced_at` field in task.md.
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
+Add or update `last_synced_at` field in task.md to `{current time}`.
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Sync to Issue** by {agent} — Progress synced to Issue #{issue-number}
+  - {yyyy-MM-dd HH:mm:ss} — **Sync to Issue** by {agent} — Progress synced to Issue #{issue-number}
   ```
 
 ### 7. Inform User

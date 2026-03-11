@@ -65,6 +65,12 @@ description: >
 
 ### 6. 更新任务状态
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 更新 `.ai-workspace/active/{task-id}/task.md`：
 - `current_step`：technical-design
 - `assigned_to`：{当前 AI 代理}
@@ -73,7 +79,7 @@ description: >
 - 在工作流进度中标记 technical-design 为已完成
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Technical Design** by {agent} — Plan completed, awaiting human review
+  - {yyyy-MM-dd HH:mm:ss} — **Technical Design** by {agent} — Plan completed, awaiting human review
   ```
 
 ### 7. 告知用户

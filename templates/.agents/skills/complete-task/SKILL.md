@@ -45,6 +45,12 @@ Please complete the missing steps first, or use --force to override.
 
 ### 3. Update Task Metadata
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update `.ai-workspace/active/{task-id}/task.md`:
 - `status`: completed
 - `completed_at`: {current timestamp}
@@ -52,7 +58,7 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - Mark all workflow steps as complete
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Completed** by {agent} — Task archived to completed/
+  - {yyyy-MM-dd HH:mm:ss} — **Completed** by {agent} — Task archived to completed/
   ```
 
 ### 4. Archive Task

@@ -99,10 +99,16 @@ EOF
 
 ### 6. 更新任务状态
 
-在 task.md 中添加或更新 `last_synced_to_pr_at` 字段。
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
+在 task.md 中添加或更新 `last_synced_to_pr_at` 字段为 `{当前时间}`。
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Sync to PR** by {agent} — Progress synced to PR #{pr-number}
+  - {yyyy-MM-dd HH:mm:ss} — **Sync to PR** by {agent} — Progress synced to PR #{pr-number}
   ```
 
 ### 7. 告知用户

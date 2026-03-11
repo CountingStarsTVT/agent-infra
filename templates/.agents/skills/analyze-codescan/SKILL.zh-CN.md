@@ -133,10 +133,16 @@ tool: <tool-name>
 
 ### 6. 更新任务状态
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 更新 task.md：`current_step` -> `security-analysis`。
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Security Analysis** by {agent} — Code Scanning alert #{alert-number} analyzed, risk: {High/Medium/Low}
+  - {yyyy-MM-dd HH:mm:ss} — **Security Analysis** by {agent} — Code Scanning alert #{alert-number} analyzed, risk: {High/Medium/Low}
   ```
 
 ### 7. 告知用户

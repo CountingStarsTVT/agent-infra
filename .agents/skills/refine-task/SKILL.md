@@ -84,13 +84,19 @@ description: >
 
 ### 7. 更新任务状态
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 更新 `.ai-workspace/active/{task-id}/task.md`：
 - `current_step`：refinement
 - `assigned_to`：{当前 AI 代理}
 - `updated_at`：{当前时间}
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Refinement (for {review-artifact})** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
+  - {yyyy-MM-dd HH:mm:ss} — **Refinement (for {review-artifact})** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
   ```
 
 ### 8. 告知用户

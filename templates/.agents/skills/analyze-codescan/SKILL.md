@@ -134,10 +134,16 @@ Create `.ai-workspace/active/{task-id}/analysis.md`:
 
 ### 6. Update Task Status
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update task.md with `current_step: security-analysis`.
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Security Analysis** by {agent} — Code Scanning alert #{alert-number} analyzed, risk: {High/Medium/Low}
+  - {yyyy-MM-dd HH:mm:ss} — **Security Analysis** by {agent} — Code Scanning alert #{alert-number} analyzed, risk: {High/Medium/Low}
   ```
 
 ### 7. Inform User

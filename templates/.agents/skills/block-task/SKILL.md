@@ -41,13 +41,19 @@ Before blocking, thoroughly analyze:
 
 ### 3. Update Task Metadata
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update `.ai-workspace/active/{task-id}/task.md`:
 - `status`: blocked
 - `blocked_at`: {current timestamp}
 - `updated_at`: {current timestamp}
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Blocked** by {agent} — {one-line reason}
+  - {yyyy-MM-dd HH:mm:ss} — **Blocked** by {agent} — {one-line reason}
   ```
 
 Add a blocking information section to task.md.

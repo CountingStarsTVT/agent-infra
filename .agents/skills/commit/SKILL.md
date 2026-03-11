@@ -134,11 +134,17 @@ EOF
 
 ## 步骤 4：更新任务状态（如果与任务相关）
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 提交后，根据情况更新任务状态：
 
 对于以下所有情况，**追加**到 task.md 的 `## Activity Log`（不要覆盖之前的记录）：
 ```
-- {yyyy-MM-dd HH:mm} — **Commit** by {agent} — {commit hash short} {commit subject}
+- {yyyy-MM-dd HH:mm:ss} — **Commit** by {agent} — {commit hash short} {commit subject}
 ```
 
 ### 情况 1：最终提交（任务完成）

@@ -91,6 +91,12 @@ description: >
 
 ### 6. 更新任务状态
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 更新 `.ai-workspace/active/{task-id}/task.md`：
 - `current_step`：implementation
 - `assigned_to`：{当前 AI 代理}
@@ -99,7 +105,7 @@ description: >
 - 在工作流进度中标记 implementation 为已完成，并注明实际轮次（如果任务模板支持）
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Implementation (Round {N})** by {agent} — Code implemented, {n} files modified, {n} tests passed → {artifact-filename}
+  - {yyyy-MM-dd HH:mm:ss} — **Implementation (Round {N})** by {agent} — Code implemented, {n} files modified, {n} tests passed → {artifact-filename}
   ```
 
 ### 7. 告知用户

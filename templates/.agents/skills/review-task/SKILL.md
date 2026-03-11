@@ -72,6 +72,12 @@ Create `.ai-workspace/active/{task-id}/{review-artifact}`.
 
 ### 5. Update Task Status
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update `.ai-workspace/active/{task-id}/task.md`:
 - `current_step`: code-review
 - `assigned_to`: {reviewer}
@@ -80,7 +86,7 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - Mark code-review as complete in workflow progress and include the actual round when the task template supports it
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Code Review (Round {N})** by {agent} — Verdict: {Approved/Changes Requested/Rejected}, Blockers: {n}, Major: {n}, Minor: {n} → {artifact-filename}
+  - {yyyy-MM-dd HH:mm:ss} — **Code Review (Round {N})** by {agent} — Verdict: {Approved/Changes Requested/Rejected}, Blockers: {n}, Major: {n}, Minor: {n} → {artifact-filename}
   ```
 
 ### 6. Inform User

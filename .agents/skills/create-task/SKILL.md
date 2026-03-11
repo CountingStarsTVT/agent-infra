@@ -127,6 +127,12 @@ assigned_to: {当前 AI 代理}
 
 ### 5. 更新任务状态
 
+获取当前时间：
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 更新 `.ai-workspace/active/{task-id}/task.md`：
 - `current_step`：requirement-analysis
 - `assigned_to`：{当前 AI 代理}
@@ -135,7 +141,7 @@ assigned_to: {当前 AI 代理}
 - 在工作流进度中标记 requirement-analysis 为已完成
 - **追加**到 `## Activity Log`（不要覆盖之前的记录）：
   ```
-  - {yyyy-MM-dd HH:mm} — **Requirement Analysis** by {agent} — Task created and analysis completed
+  - {yyyy-MM-dd HH:mm:ss} — **Requirement Analysis** by {agent} — Task created and analysis completed
   ```
 
 ### 6. 告知用户

@@ -67,6 +67,12 @@ Create `.ai-workspace/active/{task-id}/plan.md`.
 
 ### 6. Update Task Status
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update `.ai-workspace/active/{task-id}/task.md`:
 - `current_step`: technical-design
 - `assigned_to`: {current AI agent}
@@ -75,7 +81,7 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 - Mark technical-design as complete in workflow progress
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Technical Design** by {agent} — Plan completed, awaiting human review
+  - {yyyy-MM-dd HH:mm:ss} — **Technical Design** by {agent} — Plan completed, awaiting human review
   ```
 
 ### 7. Inform User

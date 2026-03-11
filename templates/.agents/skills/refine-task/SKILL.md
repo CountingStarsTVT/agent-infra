@@ -86,13 +86,19 @@ Use this heading for the appended section:
 
 ### 7. Update Task Status
 
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 Update `.ai-workspace/active/{task-id}/task.md`:
 - `current_step`: refinement
 - `assigned_to`: {current AI agent}
 - `updated_at`: {current time}
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Refinement (for {review-artifact})** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
+  - {yyyy-MM-dd HH:mm:ss} — **Refinement (for {review-artifact})** by {agent} — Fixed {n} blockers, {n} major, {n} minor issues
   ```
 
 ### 8. Inform User

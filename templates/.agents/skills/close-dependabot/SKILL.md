@@ -88,10 +88,16 @@ gh api --method PATCH \
 ### 7. Record in Task (If Exists)
 
 If a related task exists (search for `security_alert_number: <alert-number>`):
+Get the current time:
+
+```bash
+date "+%Y-%m-%d %H:%M:%S"
+```
+
 - Add closure record to task.md
 - **Append** to `## Activity Log` (do NOT overwrite previous entries):
   ```
-  - {yyyy-MM-dd HH:mm} — **Alert Closed** by {agent} — Dependabot alert #{alert-number} dismissed: {reason}
+  - {yyyy-MM-dd HH:mm:ss} — **Alert Closed** by {agent} — Dependabot alert #{alert-number} dismissed: {reason}
   ```
 - Archive the task
 
