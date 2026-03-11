@@ -97,6 +97,8 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 
 ### 8. Inform User
 
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 Output format:
 ```
 Refinement complete for task {task-id}.
@@ -162,7 +164,7 @@ Append to `{implementation-artifact}`:
 - [ ] Updated fix log in `{implementation-artifact}`
 - [ ] Updated task status in task.md
 - [ ] Appended entry to Activity Log in task.md
-- [ ] Informed user of next step with TUI-specific commands
+- [ ] Informed user of next step (must include all TUI command formats — do not filter)
 
 ## Notes
 

@@ -67,6 +67,9 @@ ls .ai-workspace/blocked/{task-id}/task.md
 ### 6. Sync to Issue (Optional)
 
 If the task has an `issue_number`, suggest syncing:
+
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 (Optional) Sync the blocking status to the Issue:
   - Claude Code / OpenCode: /sync-issue {task-id}

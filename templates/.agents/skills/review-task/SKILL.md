@@ -85,6 +85,8 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 
 ### 6. Inform User
 
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 Output based on review result:
 
 **If approved**:
@@ -230,7 +232,7 @@ Next step - re-implement:
 - [ ] Updated `assigned_to` to reviewer name in task.md
 - [ ] Appended entry to Activity Log in task.md
 - [ ] Marked code-review as complete in workflow progress
-- [ ] Informed user of next step with TUI-specific commands based on review result
+- [ ] Informed user of next step based on review result (must include all TUI command formats — do not filter)
 
 ## Notes
 

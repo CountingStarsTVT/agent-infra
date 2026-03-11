@@ -63,6 +63,9 @@ Report:
 - Any deprecation warnings or breaking changes noticed
 
 Suggest next step:
+
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 Next step - commit changes:
   - Claude Code / OpenCode: /commit

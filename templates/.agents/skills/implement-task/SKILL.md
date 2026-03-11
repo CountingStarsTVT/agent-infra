@@ -106,6 +106,8 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 
 ### 7. Inform User
 
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 Output format:
 ```
 Implementation complete for task {task-id}.
@@ -194,7 +196,7 @@ Next step - code review:
 - [ ] Updated `assigned_to` in task.md
 - [ ] Appended entry to Activity Log in task.md
 - [ ] Marked implementation as complete in workflow progress
-- [ ] Informed user of next step with TUI-specific commands (review-task)
+- [ ] Informed user of next step (must include all TUI command formats — do not filter)
 
 ## STOP
 

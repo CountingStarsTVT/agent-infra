@@ -50,6 +50,9 @@ If tests fail:
 ## Next Steps
 
 After tests pass, suggest committing the changes:
+
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 Next step - commit changes:
   - Claude Code / OpenCode: /commit

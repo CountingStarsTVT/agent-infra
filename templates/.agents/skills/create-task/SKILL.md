@@ -142,6 +142,8 @@ Update `.ai-workspace/active/{task-id}/task.md`:
 
 ### 6. Inform User
 
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 Output format:
 ```
 Task created and analysis complete.
@@ -171,7 +173,7 @@ Next step - review the analysis, then design the technical plan:
 - [ ] Updated `assigned_to` in task.md
 - [ ] Appended entry to Activity Log in task.md
 - [ ] Marked requirement-analysis as complete in workflow progress
-- [ ] Informed user of next step with TUI-specific commands (plan-task)
+- [ ] Informed user of next step (must include all TUI command formats — do not filter)
 - [ ] **Did NOT modify any business code or config files** (only task.md and analysis.md)
 
 ## STOP

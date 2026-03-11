@@ -153,6 +153,9 @@ Prerequisites:
 - [ ] All workflow steps complete
 
 Suggest next step:
+
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 Next step - complete and archive the task:
   - Claude Code / OpenCode: /complete-task {task-id}
@@ -174,6 +177,9 @@ If the commit is ready for code review:
 - Mark implementation step as complete in workflow progress
 
 Suggest next step:
+
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 Next step - code review:
   - Claude Code / OpenCode: /review-task {task-id}
@@ -188,6 +194,9 @@ If the commit should become a Pull Request:
 - Record PR plan in task.md
 
 Suggest next step:
+
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 Next step - create a Pull Request:
   - Claude Code / OpenCode: /create-pr

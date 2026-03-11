@@ -90,6 +90,8 @@ If there is an active task for this work, update `.ai-workspace/active/{task-id}
 
 ### 9. Output Result
 
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 PR created: {pr-url}
 

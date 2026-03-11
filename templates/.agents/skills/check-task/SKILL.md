@@ -97,7 +97,7 @@ Next Step:
 
 ### 5. Suggest Next Action
 
-Based on the current workflow state, suggest the appropriate next skill with TUI-specific commands:
+Based on the current workflow state, suggest the appropriate next skill. You must show all TUI command formats from every column in the table below, not just the column for the current AI agent:
 
 | Current State | Claude Code / OpenCode | Gemini CLI | Codex CLI |
 |--------------|------------------------|------------|-----------|

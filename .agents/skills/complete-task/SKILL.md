@@ -73,6 +73,8 @@ ls .ai-workspace/completed/{task-id}/task.md
 
 如果任务有 `issue_number` 字段，可选择同步完成状态：
 
+> **重要**：以下列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 （可选）同步完成状态到 GitHub Issue：
   - Claude Code / OpenCode：/sync-issue {task-id}

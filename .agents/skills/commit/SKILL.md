@@ -152,6 +152,9 @@ EOF
 - [ ] 所有工作流步骤完成
 
 建议下一步：
+
+> **重要**：以下「下一步」中列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 下一步 - 完成并归档任务：
   - Claude Code / OpenCode：/complete-task {task-id}
@@ -173,6 +176,9 @@ EOF
 - 在工作流进度中标记 implementation 步骤为已完成
 
 建议下一步：
+
+> **重要**：以下「下一步」中列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 下一步 - 代码审查：
   - Claude Code / OpenCode：/review-task {task-id}
@@ -187,6 +193,9 @@ EOF
 - 在 task.md 中记录 PR 计划
 
 建议下一步：
+
+> **重要**：以下「下一步」中列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 下一步 - 创建 Pull Request：
   - Claude Code / OpenCode：/create-pr

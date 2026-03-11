@@ -66,6 +66,9 @@ ls .ai-workspace/blocked/{task-id}/task.md
 ### 6. 同步到 Issue（可选）
 
 如果任务有 `issue_number`，建议同步：
+
+> **重要**：以下列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 （可选）同步阻塞状态到 Issue：
   - Claude Code / OpenCode：/sync-issue {task-id}

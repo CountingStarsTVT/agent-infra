@@ -142,6 +142,8 @@ Update task.md with `current_step: security-analysis`.
 
 ### 7. Inform User
 
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 Code Scanning alert #{alert-number} analysis complete.
 

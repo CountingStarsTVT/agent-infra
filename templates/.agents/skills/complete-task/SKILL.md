@@ -75,6 +75,8 @@ Confirm the task directory was successfully moved.
 
 If the task has an `issue_number` field, optionally sync the completion status:
 
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
+
 ```
 (Optional) Sync completion status to the GitHub Issue:
   - Claude Code / OpenCode: /sync-issue {task-id}

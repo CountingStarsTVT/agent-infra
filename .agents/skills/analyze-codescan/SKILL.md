@@ -141,6 +141,8 @@ tool: <tool-name>
 
 ### 7. 告知用户
 
+> **重要**：以下「下一步」中列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 Code Scanning 告警 #{alert-number} 分析完成。
 

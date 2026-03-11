@@ -57,6 +57,9 @@ node --test tests/*.test.js
 - 发现的任何弃用警告或破坏性变更
 
 建议下一步：
+
+> **重要**：以下「下一步」中列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 下一步 - 提交代码：
   - Claude Code / OpenCode：/commit

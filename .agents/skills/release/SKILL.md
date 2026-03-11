@@ -56,6 +56,8 @@ git tag v{version}
 
 ### 步骤 6：输出摘要
 
+> **重要**：以下「下一步」中列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
+
 ```
 Release v{version} prepared.
 
