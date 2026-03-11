@@ -207,4 +207,22 @@ that the change direction is correct (correct: new template content → local;
 wrong: reverting rendered content back to placeholders). If wrong-direction
 changes are found, pause and investigate.
 
+### Self-update detection
+
+Check whether `git diff` includes changes to
+`.agents/skills/update-ai-collaboration/SKILL.md`.
+If this file was modified during the current update, append the following
+warning to the end of the report:
+
+```
+⚠ The update-ai-collaboration skill itself was updated.
+  Please run /update-ai-collaboration again to ensure all new logic takes effect.
+```
+
+> **Rationale**: The current execution used the old skill logic; the new version
+> may contain additional processing steps. Running again ensures the new logic
+> is fully applied.
+> Alternatively, users can run `aci update` before executing the skill to
+> pre-update the seed files and avoid the need for a second run.
+
 Output the report, then **STOP** — do not make other changes to the project.

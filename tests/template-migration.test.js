@@ -347,6 +347,7 @@ test("update-ai-collaboration instructions point to templates rendering", () => 
   assert.match(updateSkill, /templateSource/);
   assert.match(updateSkill, /templates\//);
   assert.match(updateSkill, /git.*pull/);
+  assert.match(updateSkill, /aci update/);
   assert.match(geminiUpdate, /SKILL\.md/);
 });
 
@@ -738,6 +739,104 @@ test("ai-collaboration-installer init rejects invalid input", () => {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
+});
+
+test("ai-collaboration-installer update refreshes seed files and syncs file registry", () => {
+  const os = require("node:os");
+  const { execSync } = require("node:child_process");
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-update-"));
+  const cli = filePath("bin/cli.js");
+
+  const config = {
+    version: "1.0.0",
+    project: "seedproj",
+    org: "seedorg",
+    language: "zh-CN",
+    templateSource: "templates/",
+    templateVersion: "stale",
+    modules: ["ai", "github"],
+    files: {
+      managed: [".editorconfig"],
+      merged: [".mailmap"],
+      ejected: []
+    }
+  };
+
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, "collaborator.json"),
+      JSON.stringify(config, null, 2) + "\n",
+      "utf8"
+    );
+    fs.mkdirSync(path.join(tmpDir, ".agents", "skills", "update-ai-collaboration"), {
+      recursive: true
+    });
+    fs.writeFileSync(
+      path.join(tmpDir, ".agents", "skills", "update-ai-collaboration", "SKILL.md"),
+      "stale skill\n",
+      "utf8"
+    );
+
+    const output = execSync(`node "${cli}" update`, {
+      cwd: tmpDir,
+      stdio: "pipe",
+      encoding: "utf8"
+    });
+
+    assert.match(output, /Seed files updated successfully!/);
+
+    const updated = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "collaborator.json"), "utf8")
+    );
+    assert.ok(updated.files.managed.includes(".agents/skills/"));
+    assert.ok(updated.files.merged.includes("**/test.*"));
+    assert.equal(
+      updated.files.merged.filter((entry) => entry === ".mailmap").length,
+      1,
+      "existing merged entries should not be duplicated"
+    );
+
+    const skill = fs.readFileSync(
+      path.join(tmpDir, ".agents", "skills", "update-ai-collaboration", "SKILL.md"),
+      "utf8"
+    );
+    assert.notEqual(skill, "stale skill\n");
+    assert.match(skill, /aci update/);
+    assert.doesNotMatch(skill, /\{\{project\}\}/);
+    assert.doesNotMatch(skill, /\{\{org\}\}/);
+
+    assert.ok(
+      fs.existsSync(path.join(tmpDir, ".claude", "commands", "update-ai-collaboration.md"))
+    );
+    assert.ok(
+      fs.existsSync(
+        path.join(tmpDir, ".gemini", "commands", "seedproj", "update-ai-collaboration.toml")
+      )
+    );
+    assert.ok(
+      fs.existsSync(path.join(tmpDir, ".opencode", "commands", "update-ai-collaboration.md"))
+    );
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test("ai-collaboration-installer update requires collaborator.json", () => {
+  const os = require("node:os");
+  const { execSync } = require("node:child_process");
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-update-"));
+  const cli = filePath("bin/cli.js");
+
+  try {
+    assert.throws(() => {
+      execSync(`node "${cli}" update`, {
+        cwd: tmpDir,
+        stdio: "pipe"
+      });
+    });
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 });
 
 test("collaborator.json does not contain license field", () => {

@@ -16,6 +16,7 @@ const USAGE = `ai-collaboration-installer - bootstrap AI collaboration infrastru
 
 Usage:
   ai-collaboration-installer init        Initialize a new project with update-ai-collaboration seed command
+  ai-collaboration-installer update      Update seed files and sync file registry for an existing project
   ai-collaboration-installer version     Show version
   ai-collaboration-installer help        Show this help message
 
@@ -37,6 +38,14 @@ switch (command) {
   case 'init': {
     const { cmdInit } = require('../lib/init');
     cmdInit().catch((e) => {
+      process.stderr.write(`Error: ${e.message}\n`);
+      process.exitCode = 1;
+    });
+    break;
+  }
+  case 'update': {
+    const { cmdUpdate } = require('../lib/update');
+    cmdUpdate().catch((e) => {
       process.stderr.write(`Error: ${e.message}\n`);
       process.exitCode = 1;
     });
