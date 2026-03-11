@@ -43,6 +43,15 @@ Only process files belonging to modules listed in `collaborator.json.modules`.
 ANY glob pattern in `files.merged`, it MUST use the merged strategy.
 Match glob patterns against the file's relative path in the project.
 
+### Glob matching semantics
+
+Patterns follow standard glob rules:
+- `*` matches a single path component (does not cross `/`).
+  Example: `*/test.*` matches `commands/test.md` but NOT `.claude/commands/test.md`.
+- `**` matches zero or more path components (any depth).
+  Example: `**/test.*` matches `test.md`, `commands/test.md`, and `.claude/commands/test.md`.
+- Patterns are matched against the file's **full relative path** from the project root.
+
 ## Step 4: Process managed files
 
 For each template file under a managed directory/path, follow these sub-steps in order:
@@ -93,7 +102,7 @@ the project name.
 - Create new files that exist in the template but not locally
 - Flag files removed from the template source; do not auto-delete them
 
-## Step 5: Process merged files (AI intelligent merge)
+## Step 5: Process merged files (template-based merge with delta extraction)
 
 Render the latest template version (same language selection and placeholder
 rendering rules as Step 4), then read the current local file.
@@ -101,17 +110,44 @@ rendering rules as Step 4), then read the current local file.
 **If the local file does not exist** (first-time setup), write the rendered
 template directly and skip merge.
 
-If the local file exists, compare the rendered template with the local file:
-- Identify **template standard sections** (structure, formatting, general rules)
-  and **user customizations** (project-specific content, filled TODOs, etc.)
-- Template standard sections → update to latest version
-- User customizations → preserve
-- New template sections → insert at appropriate locations
-- Removed template sections → flag to user, preserve by default
+If the local file exists, execute the following merge algorithm:
 
-**Merge principles**:
-- When in doubt, preserve user content
-- Never silently delete user-added content
+### 5.1 Use template as the base
+
+Use the rendered new template as the output base. The template represents
+best practices; its structure and content are authoritative.
+
+### 5.2 Extract deltas from local file
+
+Scan the local file for content that goes beyond the template (user deltas):
+- **Filled TODOs**: Template TODO placeholders replaced with actual content
+- **Added sections**: Content in local file that does not exist in template
+- **Extended content**: Supplementary details added to existing template sections
+
+### 5.3 Merge deltas into template
+
+Insert extracted deltas into appropriate positions in the new template:
+- Filled TODOs → replace the corresponding TODO placeholder
+- Added sections → insert at the most relevant location
+- Extended content → merge into the corresponding section
+
+### 5.4 Full read-through
+
+Review the merged file for logical completeness. Verify:
+- Deltas are placed correctly
+- No duplicate content
+- Document structure is coherent
+
+### 5.5 Conflict handling
+
+When user-modified content conflicts with new template content:
+- Keep the template version (template authority principle)
+- Flag the conflict in the report so the user can confirm
+
+### 5.6 Remaining TODOs
+
+After merge, if template TODOs remain unfilled by local file content,
+flag them in the report for the user.
 
 ## Step 6: Process ejected files
 
@@ -142,10 +178,9 @@ to a different template tree.
 
 ## Step 8: Verify and output report
 
-**Idempotency check**: Running this command on an already up-to-date project
-should produce zero or very few file changes. If managed file changes are
-unexpectedly high, pause before committing and spot-check with `git diff`
+**Direction check**: Before outputting the report, spot-check with `git diff`
 that the change direction is correct (correct: new template content → local;
-wrong: reverting rendered content back to placeholders).
+wrong: reverting rendered content back to placeholders). If wrong-direction
+changes are found, pause and investigate.
 
 Output the report, then **STOP** — do not make other changes to the project.

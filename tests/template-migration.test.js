@@ -198,6 +198,33 @@ test("collaborator.json declares templates as the template source", () => {
   assert.equal(collaborator.templateSource, "templates/");
 });
 
+test("collaborator.json merged patterns use recursive command globs and explicit skill paths", () => {
+  const collaborator = JSON.parse(read("collaborator.json"));
+  const merged = collaborator.files.merged;
+
+  [
+    "**/test.*",
+    "**/test-integration.*",
+    "**/release.*",
+    "**/upgrade-dependency.*",
+    ".agents/skills/test/SKILL.*",
+    ".agents/skills/test-integration/SKILL.*",
+    ".agents/skills/release/SKILL.*",
+    ".agents/skills/upgrade-dependency/SKILL.*"
+  ].forEach((pattern) => {
+    assert.ok(merged.includes(pattern), `merged should include ${pattern}`);
+  });
+
+  [
+    "*/test.*",
+    "*/test-integration.*",
+    "*/release.*",
+    "*/upgrade-dependency.*"
+  ].forEach((pattern) => {
+    assert.ok(!merged.includes(pattern), `merged should not include legacy ${pattern}`);
+  });
+});
+
 test("required template files were migrated into templates/", () => {
   const requiredFiles = [
     "templates/.mailmap",
@@ -637,6 +664,23 @@ test("ai-collaboration-installer init generates seed files in a temp directory",
     assert.equal(config.org, "testorg");
     assert.ok(!config.branchPrefix, "branchPrefix should not exist");
     assert.ok(!config.source, "consumer projects should not have source: self");
+    assert.ok(!config.files.managed.includes(".mailmap"), ".mailmap should not be managed");
+    assert.ok(config.files.merged.includes(".mailmap"), ".mailmap should be merged");
+    [
+      "**/test.*",
+      "**/test-integration.*",
+      "**/release.*",
+      "**/upgrade-dependency.*",
+      ".agents/skills/test/SKILL.*",
+      ".agents/skills/test-integration/SKILL.*",
+      ".agents/skills/release/SKILL.*",
+      ".agents/skills/upgrade-dependency/SKILL.*"
+    ].forEach((pattern) => {
+      assert.ok(
+        config.files.merged.includes(pattern),
+        `init should generate merged pattern ${pattern}`
+      );
+    });
 
     // verify seed command files exist
     assert.ok(
