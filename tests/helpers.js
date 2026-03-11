@@ -1,0 +1,211 @@
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const rootDir = path.resolve(__dirname, "..");
+
+function filePath(relativePath) {
+  return path.join(rootDir, relativePath);
+}
+
+function exists(relativePath) {
+  return fs.existsSync(filePath(relativePath));
+}
+
+function read(relativePath) {
+  return fs.readFileSync(filePath(relativePath), "utf8");
+}
+
+function listFilesRecursive(relativeDir) {
+  const entries = fs.readdirSync(filePath(relativeDir), { withFileTypes: true });
+
+  return entries.flatMap((entry) => {
+    const relativePath = path.join(relativeDir, entry.name);
+    if (entry.isDirectory()) {
+      return listFilesRecursive(relativePath);
+    }
+    return [relativePath];
+  });
+}
+
+function listSkillNames() {
+  return fs.readdirSync(filePath(".agents/skills"), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+}
+
+function langTemplate(basePath, lang) {
+  if (lang === "zh-CN") {
+    const ext = path.extname(basePath);
+    const variant = basePath.replace(ext, `.zh-CN${ext}`);
+    if (exists(variant)) {
+      return variant;
+    }
+  }
+
+  return basePath;
+}
+
+function renderPlaceholders(content, replacements) {
+  return content
+    .replace(/\{\{project\}\}/g, replacements.project)
+    .replace(/\{\{org\}\}/g, replacements.org);
+}
+
+function buildCommandSyncFiles(project) {
+  return listSkillNames().flatMap((skill) => [
+    [`.claude/commands/${skill}.md`, `templates/.claude/commands/${skill}.md`],
+    [`.opencode/commands/${skill}.md`, `templates/.opencode/commands/${skill}.md`],
+    [`.gemini/commands/${project}/${skill}.toml`, `templates/.gemini/commands/_project_/${skill}.toml`]
+  ]);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function loadFresh(relativePath) {
+  const resolved = require.resolve(filePath(relativePath));
+  delete require.cache[resolved];
+  return require(resolved);
+}
+
+function assertContainsPatterns(relativePath, patterns) {
+  const content = read(relativePath);
+
+  patterns.forEach((pattern) => {
+    assert.match(content, pattern, `${relativePath} should match ${pattern}`);
+  });
+}
+
+function skillDocPaths(skill) {
+  return [
+    `.agents/skills/${skill}/SKILL.md`,
+    `templates/.agents/skills/${skill}/SKILL.md`,
+    `templates/.agents/skills/${skill}/SKILL.zh-CN.md`
+  ].filter(exists);
+}
+
+const commandSpecs = {
+  "analyze-codescan": {
+    usage: "<alert-number>",
+    en: "Analyze CodeQL alert #$1.",
+    zh: "分析 CodeQL 告警 #$1。"
+  },
+  "analyze-dependabot": {
+    usage: "<alert-number>",
+    en: "Analyze Dependabot alert #$1.",
+    zh: "分析 Dependabot 告警 #$1。"
+  },
+  "analyze-issue": {
+    usage: "<issue-number>",
+    en: "Analyze Issue #$1.",
+    zh: "分析 Issue #$1。"
+  },
+  "block-task": {
+    usage: "<task-id> [reason]",
+    en: "Block task: $ARGUMENTS",
+    zh: "阻塞任务：$ARGUMENTS"
+  },
+  "check-task": {
+    usage: "<task-id>",
+    en: "Check status of task $1.",
+    zh: "查看任务 $1 的状态。"
+  },
+  commit: {},
+  "close-codescan": {
+    usage: "<alert-number>",
+    en: "Close CodeQL alert #$1.",
+    zh: "关闭 CodeQL 告警 #$1。"
+  },
+  "close-dependabot": {
+    usage: "<alert-number>",
+    en: "Close Dependabot alert #$1.",
+    zh: "关闭 Dependabot 告警 #$1。"
+  },
+  "complete-task": {
+    usage: "<task-id>",
+    en: "Complete task $1.",
+    zh: "完成任务 $1。"
+  },
+  "create-pr": {
+    usage: "[target-branch]",
+    en: "Create PR: $ARGUMENTS",
+    zh: "创建 PR：$ARGUMENTS"
+  },
+  "create-release-note": {
+    usage: "<ver> [prev]",
+    en: "Generate release note: $ARGUMENTS",
+    zh: "生成发布说明：$ARGUMENTS"
+  },
+  "create-task": {
+    usage: "<description>",
+    en: "Task description: $ARGUMENTS",
+    zh: "任务描述：$ARGUMENTS"
+  },
+  "implement-task": {
+    usage: "<task-id>",
+    en: "Implement task $1.",
+    zh: "实施任务 $1。"
+  },
+  "plan-task": {
+    usage: "<task-id>",
+    en: "Design plan for task $1.",
+    zh: "为任务 $1 设计方案。"
+  },
+  "refine-task": {
+    usage: "<task-id>",
+    en: "Refine task $1.",
+    zh: "修复任务 $1 的审查问题。"
+  },
+  "refine-title": {
+    usage: "<number>",
+    en: "Refine title of #$1.",
+    zh: "优化 #$1 的标题。"
+  },
+  release: {
+    usage: "<version>",
+    en: "Release version $1.",
+    zh: "发布版本 $1。"
+  },
+  "review-task": {
+    usage: "<task-id>",
+    en: "Review task $1.",
+    zh: "审查任务 $1。"
+  },
+  "sync-issue": {
+    usage: "<task-id>",
+    en: "Sync task $1 to Issue.",
+    zh: "同步任务 $1 到 Issue。"
+  },
+  "sync-pr": {
+    usage: "<task-id>",
+    en: "Sync task $1 to PR.",
+    zh: "同步任务 $1 到 PR。"
+  },
+  test: {},
+  "test-integration": {},
+  "update-ai-collaboration": {},
+  "upgrade-dependency": {
+    usage: "<pkg> <from> <to>",
+    en: "Upgrade dependency: $ARGUMENTS",
+    zh: "升级依赖：$ARGUMENTS"
+  }
+};
+
+module.exports = {
+  assertContainsPatterns,
+  buildCommandSyncFiles,
+  commandSpecs,
+  escapeRegExp,
+  exists,
+  filePath,
+  langTemplate,
+  listFilesRecursive,
+  listSkillNames,
+  loadFresh,
+  read,
+  renderPlaceholders,
+  skillDocPaths
+};
