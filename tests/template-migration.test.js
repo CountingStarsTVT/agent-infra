@@ -252,9 +252,8 @@ test("required template files were migrated into templates/", () => {
     "templates/AGENTS.md",
     "templates/CONTRIBUTING.md",
     "templates/SECURITY.md",
-    "templates/.gitignore",
-    "templates/README.md",
-    "templates/README.zh-CN.md"
+    "templates/SECURITY.zh-CN.md",
+    "templates/.gitignore"
   ];
 
   requiredFiles.forEach((relativePath) => {
@@ -763,13 +762,13 @@ test("README documents the bootstrap installation flow", () => {
   const readmeZh = read("README.zh-CN.md");
 
   assert.match(readme, /install\.sh/);
-  assert.match(readme, /ai-collaboration-installer init/);
+  assert.match(readme, /aci init/);
   assert.match(readme, /update-ai-collaboration/);
   assert.match(readme, /npm install -g/);
-  assert.match(readme, /npx ai-collaboration-installer/);
+  assert.match(readme, /Install from source/);
   assert.match(readmeZh, /install\.sh/);
-  assert.match(readmeZh, /ai-collaboration-installer init/);
+  assert.match(readmeZh, /aci init/);
   assert.match(readmeZh, /update-ai-collaboration/);
   assert.match(readmeZh, /npm install -g/);
-  assert.match(readmeZh, /npx ai-collaboration-installer/);
+  assert.match(readmeZh, /源码安装/);
 });

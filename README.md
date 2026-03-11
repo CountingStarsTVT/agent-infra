@@ -22,38 +22,43 @@ ai-collaboration-installer provides standardized configuration for AI TUI tools 
 | Module | Responsibility | Contents |
 |--------|---------------|----------|
 | **ai** | AI multi-tool collaboration infrastructure | `.agents/`, `.ai-workspace/`, `.claude/`, `.codex/`, `.gemini/`, `.opencode/`, `AGENTS.md`, `.mailmap` |
-| **github** | Project governance + base config | `.github/`, `.editorconfig`, `.gitignore`, `License.txt`, `README.md`, `CONTRIBUTING.md`, `SECURITY.md` |
+| **github** | Project governance + base config | `.github/`, `.editorconfig`, `.gitignore`, `License.txt`, `CONTRIBUTING.md`, `SECURITY.md`, `SECURITY.zh-CN.md` |
 
 ## Quick Start
 
 ### 1. Install ai-collaboration-installer
 
-**Option A — npm (recommended)**
-
-```bash
-npm install -g ai-collaboration-installer
-```
-
-Or run without installing:
-
-```bash
-npx ai-collaboration-installer init
-```
-
-**Option B — Shell script**
+**Option A — Shell script (recommended)**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/fitlab-ai/ai-collaboration-installer/main/install.sh | sh
+```
+
+**Option B — Install from source**
+
+```bash
+git clone https://github.com/fitlab-ai/ai-collaboration-installer.git
+cd ai-collaboration-installer
+sh install.sh
+```
+
+**Option C — npm** *(not yet published)*
+
+```bash
+npm install -g ai-collaboration-installer
 ```
 
 ### 2. Initialize a new project
 
 ```bash
 cd my-project
-ai-collaboration-installer init
+aci init
+# or: ai-collaboration-installer init
 ```
 
 The CLI will interactively collect project info (name, org, language, etc.), install the `update-ai-collaboration` seed command for all AI TUIs, and generate `collaborator.json`.
+
+> **Tip:** `aci` is a shorthand for `ai-collaboration-installer`. Both commands are equivalent.
 
 ### 3. Render the full infrastructure
 

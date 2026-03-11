@@ -1,5 +1,7 @@
 # Security Policy
 
+[中文版](SECURITY.zh-CN.md)
+
 ## Supported Versions
 
 Please use the following table to understand which versions are currently supported with security updates.
