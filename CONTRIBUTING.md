@@ -30,10 +30,11 @@ git clone git@github.com:fitlab-ai/ai-collaboration-installer.git
 
 # 安装依赖：无需安装，仅使用 Node.js 内置模块
 
-# 构建：无需构建，项目由 Node.js CLI 和模板文件组成
+# 构建（修改 src/ 或 lib/ 后需要运行）
+npm run build
 
 # 运行测试
-node --test tests/*.test.js
+npm test
 
 # 代码检查：暂未配置 lint 工具
 ```
@@ -71,6 +72,13 @@ node --test tests/*.test.js
 - 模板文件使用 `{{project}}` 和 `{{org}}` 作为渲染占位符
 - 面向用户的 Markdown 文件提供双语版本（英文为主 + 中文翻译），如 README、SECURITY
 
+### 构建架构
+
+- `src/sync-templates.js` 是开发源码，保留可读的源码结构和对 `lib/` 数据文件的标准读取方式。
+- `templates/.agents/skills/update-ai-collaboration/scripts/sync-templates.js` 是构建产物，发布时会把默认配置和版本号内联为常量。
+- 之所以需要这层构建，是因为 `sync-templates.js` 会被复制到用户项目中运行，届时不能再依赖 installer 仓库里的 `lib/` 目录。
+- 修改 `src/`、`lib/defaults.json` 或相关版本信息后，应执行 `npm run build` 重新生成产物，不要直接手工编辑 `templates/` 下的生成文件。
+
 ### 注释信息
 
 - 每一个模块文件都建议包含注释，说明其职责和用途。
@@ -100,7 +108,9 @@ node --test tests/*.test.js
 ## 测试
 
 - 测试框架：Node.js 内置测试运行器（`node:test`，需 Node.js >= 18）
-- 运行命令：`node --test tests/*.test.js`
+- 构建命令：`npm run build`（修改 `src/`、`lib/defaults.json` 或版本信息后需要运行）
+- 运行命令：`npm test`
+- 等价于：`node scripts/build-inline.js --check && node --test tests/*.test.js`
 - 测试覆盖：模板文件完整性、CLI 初始化流程、占位符渲染验证
 - 提交前务必确保所有测试通过
 

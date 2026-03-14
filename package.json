@@ -32,6 +32,7 @@
     "installer"
   ],
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "build": "node scripts/build-inline.js",
+    "test": "node scripts/build-inline.js --check && node --test tests/*.test.js"
   }
 }

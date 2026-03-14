@@ -34,48 +34,13 @@ function resolveTemplateDir() {
   return null;
 }
 
-const DEFAULTS = {
-  "files": {
-    "managed": [
-      ".editorconfig",
-      ".agents/workflows/",
-      ".agents/skills/",
-      ".agents/templates/",
-      ".claude/commands/",
-      ".gemini/commands/",
-      ".opencode/commands/",
-      ".github/ISSUE_TEMPLATE/",
-      ".github/workflows/pr-title-check.yml",
-      ".github/PULL_REQUEST_TEMPLATE.md",
-      ".github/release.yml",
-      ".github/hooks/",
-      ".ai-workspace/README.md"
-    ],
-    "merged": [
-      ".github/dependabot.yml",
-      ".mailmap",
-      "AGENTS.md",
-      "CONTRIBUTING.md",
-      "SECURITY.md",
-      ".claude/CLAUDE.md",
-      ".claude/project-rules.md",
-      ".agents/README.md",
-      ".agents/QUICKSTART.md",
-      ".gitignore",
-      "**/test.*",
-      "**/test-integration.*",
-      "**/release.*",
-      "**/upgrade-dependency.*",
-      ".agents/skills/test/SKILL.*",
-      ".agents/skills/test-integration/SKILL.*",
-      ".agents/skills/release/SKILL.*",
-      ".agents/skills/upgrade-dependency/SKILL.*"
-    ],
-    "ejected": []
-  }
-};
+const DEFAULTS = JSON.parse(
+  fs.readFileSync(new URL('../lib/defaults.json', import.meta.url), 'utf8')
+);
 
-const INSTALLER_VERSION = "0.1.0";
+const INSTALLER_VERSION = JSON.parse(
+  fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')
+).version;
 
 function norm(p) { return p.replace(/\\/g, '/'); }
 

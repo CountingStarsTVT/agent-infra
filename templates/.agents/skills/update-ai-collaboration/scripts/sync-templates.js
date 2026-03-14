@@ -18,48 +18,64 @@ import childProcess from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
-function findInstallerRoot(startDir) {
-  let current = path.resolve(startDir);
+// Keep these helpers aligned with lib/paths.js for clone installs.
+function resolveInstallDir() {
+  return path.join(os.homedir(), '.ai-collaboration-installer');
+}
 
-  while (true) {
-    if (
-      fs.existsSync(path.join(current, 'package.json')) &&
-      fs.existsSync(path.join(current, 'lib', 'paths.js'))
-    ) {
-      return current;
-    }
-
-    const parent = path.dirname(current);
-    if (parent === current) {
-      break;
-    }
-    current = parent;
-  }
-
-  const homeInstall = path.join(os.homedir(), '.ai-collaboration-installer');
-  if (
-    fs.existsSync(path.join(homeInstall, 'package.json')) &&
-    fs.existsSync(path.join(homeInstall, 'lib', 'paths.js'))
-  ) {
-    return homeInstall;
+function resolveTemplateDir() {
+  const clonePath = path.join(resolveInstallDir(), 'templates');
+  if (fs.existsSync(clonePath)) {
+    return clonePath;
   }
 
   return null;
 }
 
-const scriptDir = fileURLToPath(new URL('.', import.meta.url));
-const installerRoot = findInstallerRoot(scriptDir);
-if (!installerRoot) {
-  throw new Error('Unable to locate ai-collaboration-installer shared modules.');
-}
+const DEFAULTS = {
+  "files": {
+    "managed": [
+      ".editorconfig",
+      ".agents/workflows/",
+      ".agents/skills/",
+      ".agents/templates/",
+      ".claude/commands/",
+      ".gemini/commands/",
+      ".opencode/commands/",
+      ".github/ISSUE_TEMPLATE/",
+      ".github/workflows/pr-title-check.yml",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".github/release.yml",
+      ".github/hooks/",
+      ".ai-workspace/README.md"
+    ],
+    "merged": [
+      ".github/dependabot.yml",
+      ".mailmap",
+      "AGENTS.md",
+      "CONTRIBUTING.md",
+      "SECURITY.md",
+      ".claude/CLAUDE.md",
+      ".claude/project-rules.md",
+      ".agents/README.md",
+      ".agents/QUICKSTART.md",
+      ".gitignore",
+      "**/test.*",
+      "**/test-integration.*",
+      "**/release.*",
+      "**/upgrade-dependency.*",
+      ".agents/skills/test/SKILL.*",
+      ".agents/skills/test-integration/SKILL.*",
+      ".agents/skills/release/SKILL.*",
+      ".agents/skills/upgrade-dependency/SKILL.*"
+    ],
+    "ejected": []
+  }
+};
 
-const { resolveTemplateDir, resolveInstallDir } = await import(
-  pathToFileURL(path.join(installerRoot, 'lib', 'paths.js')).href
-);
-const defaultsPath = path.join(installerRoot, 'lib', 'defaults.json');
-const packageJsonPath = path.join(installerRoot, 'package.json');
+const INSTALLER_VERSION = "0.1.0";
 
 function norm(p) { return p.replace(/\\/g, '/'); }
 
@@ -175,22 +191,6 @@ function gitUrl(dir) {
   } catch { return null; }
 }
 
-function readDefaults() {
-  if (!fs.existsSync(defaultsPath)) {
-    return null;
-  }
-
-  return JSON.parse(fs.readFileSync(defaultsPath, 'utf8'));
-}
-
-function readVersion() {
-  try {
-    return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).version;
-  } catch {
-    return null;
-  }
-}
-
 function langSelect(rels, lang, allSet, project) {
   const sel = new Map();
 
@@ -244,7 +244,7 @@ function syncTemplates(projectRoot) {
       }).trim();
     } catch { /* ignore */ }
   } else {
-    sha = readVersion() || sha;
+    sha = INSTALLER_VERSION || sha;
   }
 
   const { project, org, language: lang = 'en', modules = [] } = cfg;
@@ -265,15 +265,12 @@ function syncTemplates(projectRoot) {
     selfUpdate: false
   };
 
-  const defs = readDefaults();
-  if (defs) {
-    const known = new Set([...managed, ...merged, ...ejected]);
-    for (const e of (defs.files.managed || [])) {
-      if (!known.has(e)) { managed.push(e); known.add(e); report.registryAdded.push({ entry: e, list: 'managed' }); }
-    }
-    for (const e of (defs.files.merged || [])) {
-      if (!known.has(e)) { merged.push(e); known.add(e); report.registryAdded.push({ entry: e, list: 'merged' }); }
-    }
+  const known = new Set([...managed, ...merged, ...ejected]);
+  for (const e of (DEFAULTS.files.managed || [])) {
+    if (!known.has(e)) { managed.push(e); known.add(e); report.registryAdded.push({ entry: e, list: 'managed' }); }
+  }
+  for (const e of (DEFAULTS.files.merged || [])) {
+    if (!known.has(e)) { merged.push(e); known.add(e); report.registryAdded.push({ entry: e, list: 'merged' }); }
   }
 
   const allRels = walkDir(templateRoot).map(f => norm(path.relative(templateRoot, f)));

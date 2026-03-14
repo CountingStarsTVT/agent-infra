@@ -7,6 +7,27 @@ import os from "node:os";
 
 import { exists, filePath, read } from "./helpers.js";
 
+function pathExists(targetPath) {
+  try {
+    fs.lstatSync(targetPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function ensureCloneInstallFixture() {
+  const installDir = path.join(os.homedir(), ".ai-collaboration-installer");
+  if (pathExists(installDir)) {
+    return () => {};
+  }
+
+  fs.symlinkSync(filePath(""), installDir, "dir");
+  return () => {
+    fs.rmSync(installDir, { recursive: true, force: true });
+  };
+}
+
 test("bootstrap CLI files exist", () => {
   assert.ok(exists("install.sh"), "install.sh should exist");
   assert.ok(exists("bin/cli.js"), "bin/cli.js (node) should exist");
@@ -116,6 +137,7 @@ test("ai-collaboration-installer init generates seed files in a temp directory",
 test("installed sync-templates.js executes inside a type=module project", () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-esm-"));
   const cli = filePath("bin/cli.js");
+  const cleanupCloneInstall = ensureCloneInstallFixture();
 
   try {
     fs.writeFileSync(
@@ -152,8 +174,15 @@ test("installed sync-templates.js executes inside a type=module project", () => 
       "sync-templates.js should be installed into the ESM project"
     );
   } finally {
+    cleanupCloneInstall();
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
+});
+
+test("build output is up-to-date", () => {
+  execFileSync(process.execPath, [filePath("scripts/build-inline.js"), "--check"], {
+    encoding: "utf8"
+  });
 });
 
 test("ai-collaboration-installer init rejects invalid input", () => {
