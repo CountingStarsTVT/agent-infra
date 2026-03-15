@@ -156,6 +156,9 @@ function gitUrl(dir) {
   } catch { return null; }
 }
 
+// Public-facing docs should keep all available language variants in sync.
+const MULTI_LANG = new Set(['SECURITY.md']);
+
 function langSelect(rels, lang, allSet, project) {
   const sel = new Map();
 
@@ -261,7 +264,11 @@ function syncTemplates(projectRoot) {
       if (!entryRels.length) continue;
     }
 
-    for (const [tgt, src] of langSelect(entryRels, lang, allSet, project)) {
+    const selected = MULTI_LANG.has(norm(entry))
+      ? entryRels.map(r => [norm(renderPathname(r, project)), r])
+      : langSelect(entryRels, lang, allSet, project);
+
+    for (const [tgt, src] of selected) {
       if (expectedTargets) expectedTargets.add(tgt);
 
       const mod = fileModule(tgt);
@@ -364,7 +371,10 @@ function syncTemplates(projectRoot) {
       const ext = path.extname(entry), base = entry.slice(0, -ext.length);
       const zh = norm(base + '.zh-CN' + ext);
       if (allSet.has(zh)) rels.push(zh);
-      for (const [t, s] of langSelect(rels, lang, allSet, project)) {
+      const selected = MULTI_LANG.has(n)
+        ? rels.map(r => [norm(renderPathname(r, project)), r])
+        : langSelect(rels, lang, allSet, project);
+      for (const [t, s] of selected) {
         if (!mergedMap.has(t)) mergedMap.set(t, s);
       }
     }

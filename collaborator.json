@@ -43,8 +43,7 @@
       ".mailmap",
       "AGENTS.md",
       "CONTRIBUTING.md",
-      "SECURITY.md",
-      "SECURITY.zh-CN.md"
+      "SECURITY.md"
     ],
     "ejected": []
   }

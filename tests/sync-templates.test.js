@@ -172,6 +172,108 @@ test("syncTemplates runs git pull and reports the install SHA when clone metadat
   }
 });
 
+test("syncTemplates outputs both SECURITY language variants for zh-CN merged files", async () => {
+  const originalHomedir = os.homedir;
+  const originalExecSync = childProcess.execSync;
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-sync-security-zh-"));
+
+  try {
+    const homeDir = path.join(tmpDir, "home");
+    const projectRoot = path.join(tmpDir, "project");
+    const templateRoot = path.join(tmpDir, "template-root");
+
+    fs.mkdirSync(homeDir, { recursive: true });
+    fs.mkdirSync(projectRoot, { recursive: true });
+    fs.mkdirSync(templateRoot, { recursive: true });
+
+    writeFile(templateRoot, "SECURITY.md", "Security EN\n");
+    writeFile(templateRoot, "SECURITY.zh-CN.md", "Security ZH\n");
+    writeJson(projectRoot, "collaborator.json", {
+      project: "demo",
+      org: "acme",
+      language: "zh-CN",
+      templateSource: templateRoot,
+      modules: [],
+      files: {
+        managed: [],
+        merged: ["SECURITY.md"],
+        ejected: []
+      }
+    });
+
+    os.homedir = () => homeDir;
+    childProcess.execSync = (command) => {
+      if (command === "git remote get-url origin") {
+        throw new Error("not a git repo");
+      }
+      throw new Error(`Unexpected command: ${command}`);
+    };
+
+    const { syncTemplates } = await loadFreshEsm(".agents/skills/update-ai-collaboration/scripts/sync-templates.js");
+    const report = syncTemplates(projectRoot);
+
+    assert.deepEqual(report.merged.pending, [
+      { target: "SECURITY.md", template: "SECURITY.md" },
+      { target: "SECURITY.zh-CN.md", template: "SECURITY.zh-CN.md" }
+    ]);
+  } finally {
+    os.homedir = originalHomedir;
+    childProcess.execSync = originalExecSync;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test("syncTemplates outputs both SECURITY language variants for en merged files", async () => {
+  const originalHomedir = os.homedir;
+  const originalExecSync = childProcess.execSync;
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-sync-security-en-"));
+
+  try {
+    const homeDir = path.join(tmpDir, "home");
+    const projectRoot = path.join(tmpDir, "project");
+    const templateRoot = path.join(tmpDir, "template-root");
+
+    fs.mkdirSync(homeDir, { recursive: true });
+    fs.mkdirSync(projectRoot, { recursive: true });
+    fs.mkdirSync(templateRoot, { recursive: true });
+
+    writeFile(templateRoot, "SECURITY.md", "Security EN\n");
+    writeFile(templateRoot, "SECURITY.zh-CN.md", "Security ZH\n");
+    writeJson(projectRoot, "collaborator.json", {
+      project: "demo",
+      org: "acme",
+      language: "en",
+      templateSource: templateRoot,
+      modules: [],
+      files: {
+        managed: [],
+        merged: ["SECURITY.md"],
+        ejected: []
+      }
+    });
+
+    os.homedir = () => homeDir;
+    childProcess.execSync = (command) => {
+      if (command === "git remote get-url origin") {
+        throw new Error("not a git repo");
+      }
+      throw new Error(`Unexpected command: ${command}`);
+    };
+
+    const { syncTemplates } = await loadFreshEsm(".agents/skills/update-ai-collaboration/scripts/sync-templates.js");
+    const report = syncTemplates(projectRoot);
+
+    assert.deepEqual(report.merged.pending, [
+      { target: "SECURITY.md", template: "SECURITY.md" },
+      { target: "SECURITY.zh-CN.md", template: "SECURITY.zh-CN.md" }
+    ]);
+  } finally {
+    os.homedir = originalHomedir;
+    childProcess.execSync = originalExecSync;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
 test("syncTemplates removes stale managed files but preserves merged, ejected, and disabled-module files", async () => {
   const originalHomedir = os.homedir;
   const originalExecSync = childProcess.execSync;
