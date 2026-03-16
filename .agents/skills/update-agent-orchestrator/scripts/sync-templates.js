@@ -80,7 +80,7 @@ const DEFAULTS = {
   }
 };
 
-const INSTALLER_VERSION = "0.2.1";
+const INSTALLER_VERSION = "0.2.2";
 
 function norm(p) { return p.replace(/\\/g, '/'); }
 
