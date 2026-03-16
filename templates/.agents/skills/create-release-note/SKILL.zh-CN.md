@@ -33,7 +33,25 @@ git rev-parse v<version>
 git rev-parse v<prev-version>
 ```
 
-### 步骤 3：收集已合并的 PR
+### 步骤 3：参考历史发布说明格式
+
+获取最近一次已发布的 Release Note 作为格式参考：
+
+```bash
+# 获取最近的非草稿 Release 标签
+gh release list --limit 5 --json tagName,isDraft,isPrerelease \
+  --jq '[.[] | select(.isDraft == false and .isPrerelease == false)][0].tagName'
+
+# 获取该 Release 的 body
+gh release view <latest-tag> --json body -q '.body'
+```
+
+**用途**：
+- 分析历史发布说明的章节结构、标题风格、emoji 使用、条目格式
+- 后续步骤 7 生成发布说明时，**必须**优先遵循历史格式，保持版本间的一致性
+- 如果没有历史发布说明，则使用步骤 7 中定义的默认格式
+
+### 步骤 4：收集已合并的 PR
 
 获取标签之间的日期范围，然后查询已合并的 PR：
 
@@ -53,7 +71,7 @@ gh pr list --state merged --base <branch> \
 git log v<prev-version>..v<version> --format="%H %s" --no-merges
 ```
 
-### 步骤 4：收集关联 Issue
+### 步骤 5：收集关联 Issue
 
 从每个 PR body 中提取关联的 Issue：
 - 匹配模式：`Closes #N`、`Fixes #N`、`Resolves #N`（不区分大小写）
@@ -62,7 +80,7 @@ git log v<prev-version>..v<version> --format="%H %s" --no-merges
 gh issue view <N> --json number,title,labels,url
 ```
 
-### 步骤 5：分类变更
+### 步骤 6：分类变更
 
 **按类型**（从 PR 标题的 Conventional Commit 前缀）：
 - `feat`、`perf`、`refactor`、依赖升级 -> Enhancement
@@ -73,9 +91,11 @@ gh issue view <N> --json number,title,labels,url
 - 从 PR 标题中的方括号 `[module]` 或 Conventional scope `feat(module):` 推断模块
 - 兜底：分析变更的文件
 
-### 步骤 6：生成发布说明
+### 步骤 7：生成发布说明
 
-格式化为 Markdown：
+**优先使用步骤 3 中获取的历史格式**。如果存在历史发布说明，严格沿用其章节结构、标题风格（含 emoji）、条目格式和双语布局。
+
+如果没有历史发布说明，使用以下默认格式化为 Markdown：
 
 ```markdown
 ## {模块/平台名称}
@@ -100,7 +120,7 @@ gh issue view <N> --json number,title,labels,url
 4. 贡献者：去重，按贡献数量降序排列
 5. 空部分：省略没有条目的部分
 
-### 步骤 7：展示并确认
+### 步骤 8：展示并确认
 
 向用户展示生成的发布说明。
 
@@ -108,7 +128,7 @@ gh issue view <N> --json number,title,labels,url
 1. 需要调整吗？
 2. 是否创建 GitHub Draft Release？
 
-### 步骤 8：创建 Draft Release（如确认）
+### 步骤 9：创建 Draft Release（如确认）
 
 ```bash
 gh release create v<version> \

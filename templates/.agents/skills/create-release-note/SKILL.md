@@ -34,7 +34,25 @@ git rev-parse v<version>
 git rev-parse v<prev-version>
 ```
 
-### Step 3: Collect Merged PRs
+### Step 3: Reference Historical Release Notes Format
+
+Fetch the most recent published release notes as a format reference:
+
+```bash
+# Get the latest non-draft release tag
+gh release list --limit 5 --json tagName,isDraft,isPrerelease \
+  --jq '[.[] | select(.isDraft == false and .isPrerelease == false)][0].tagName'
+
+# Get the release body
+gh release view <latest-tag> --json body -q '.body'
+```
+
+**Purpose**:
+- Analyze the section structure, heading style, emoji usage, and item format of historical release notes
+- When generating release notes in Step 7, **must** follow the historical format to maintain consistency across versions
+- If no historical release notes exist, use the default format defined in Step 7
+
+### Step 4: Collect Merged PRs
 
 Get the date range between tags, then query merged PRs:
 
@@ -54,7 +72,7 @@ Also collect direct commits without PRs:
 git log v<prev-version>..v<version> --format="%H %s" --no-merges
 ```
 
-### Step 4: Collect Related Issues
+### Step 5: Collect Related Issues
 
 From each PR body, extract linked Issues:
 - Match patterns: `Closes #N`, `Fixes #N`, `Resolves #N` (case-insensitive)
@@ -63,7 +81,7 @@ From each PR body, extract linked Issues:
 gh issue view <N> --json number,title,labels,url
 ```
 
-### Step 5: Classify Changes
+### Step 6: Classify Changes
 
 **By type** (from PR title conventional commit prefix):
 - `feat`, `perf`, `refactor`, dependency upgrades -> Enhancement
@@ -74,9 +92,11 @@ gh issue view <N> --json number,title,labels,url
 - Infer module from PR title brackets like `[module]` or conventional scope `feat(module):`
 - Fallback: analyze changed files
 
-### Step 6: Generate Release Notes
+### Step 7: Generate Release Notes
 
-Format as Markdown:
+**Prioritize the historical format obtained in Step 3.** If historical release notes exist, strictly follow their section structure, heading style (including emojis), item format, and bilingual layout.
+
+If no historical release notes exist, use the following default Markdown format:
 
 ```markdown
 ## {Module/Platform Name}
@@ -101,7 +121,7 @@ Format as Markdown:
 4. Contributors: Deduplicated, sorted by contribution count (descending)
 5. Empty sections: Omit sections with no entries
 
-### Step 7: Present and Confirm
+### Step 8: Present and Confirm
 
 Show the generated release notes to the user.
 
@@ -109,7 +129,7 @@ Ask:
 1. Need any adjustments?
 2. Create a GitHub Draft Release?
 
-### Step 8: Create Draft Release (If Confirmed)
+### Step 9: Create Draft Release (If Confirmed)
 
 ```bash
 gh release create v<version> \
