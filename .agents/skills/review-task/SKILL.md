@@ -100,7 +100,7 @@ date "+%Y-%m-%d %H:%M:%S"
 
 下一步 - 提交代码：
   - Claude Code / OpenCode：/commit
-  - Gemini CLI：/ai-collaboration-installer:commit
+  - Gemini CLI：/agent-orchestrator:commit
   - Codex CLI：$commit
 ```
 
@@ -112,12 +112,12 @@ date "+%Y-%m-%d %H:%M:%S"
 
 下一步 - 修复问题后提交（推荐）：
   - Claude Code / OpenCode：/refine-task {task-id}
-  - Gemini CLI：/ai-collaboration-installer:refine-task {task-id}
+  - Gemini CLI：/agent-orchestrator:refine-task {task-id}
   - Codex CLI：$refine-task {task-id}
 
 或直接提交（跳过修复）：
   - Claude Code / OpenCode：/commit
-  - Gemini CLI：/ai-collaboration-installer:commit
+  - Gemini CLI：/agent-orchestrator:commit
   - Codex CLI：$commit
 ```
 
@@ -129,7 +129,7 @@ date "+%Y-%m-%d %H:%M:%S"
 
 下一步 - 修复问题：
   - Claude Code / OpenCode：/refine-task {task-id}
-  - Gemini CLI：/ai-collaboration-installer:refine-task {task-id}
+  - Gemini CLI：/agent-orchestrator:refine-task {task-id}
   - Codex CLI：$refine-task {task-id}
 ```
 
@@ -140,7 +140,7 @@ date "+%Y-%m-%d %H:%M:%S"
 
 下一步 - 重新实现：
   - Claude Code / OpenCode：/implement-task {task-id}
-  - Gemini CLI：/ai-collaboration-installer:implement-task {task-id}
+  - Gemini CLI：/agent-orchestrator:implement-task {task-id}
   - Codex CLI：$implement-task {task-id}
 ```
 

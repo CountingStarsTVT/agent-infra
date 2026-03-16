@@ -1,6 +1,6 @@
-# ai-collaboration-installer - AI Development Guide
+# agent-orchestrator - AI Development Guide
 
-This repository contains the ai-collaboration-installer template and skill repository for multi-AI collaboration infrastructure.
+This repository contains the agent-orchestrator template and skill repository for multi-AI collaboration infrastructure.
 
 ## Quick Start Commands
 

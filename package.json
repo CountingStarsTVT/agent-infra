@@ -1,16 +1,16 @@
 {
-  "name": "ai-collaboration-installer",
+  "name": "agent-orchestrator",
   "version": "0.1.1",
   "description": "Bootstrap tool for AI multi-tool collaboration infrastructure — works with Claude Code, Codex, Gemini CLI, and OpenCode",
   "license": "MIT",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fitlab-ai/ai-collaboration-installer.git"
+    "url": "https://github.com/fitlab-ai/agent-orchestrator.git"
   },
   "bin": {
-    "ai-collaboration-installer": "./bin/cli.js",
-    "aci": "./bin/cli.js"
+    "agent-orchestrator": "./bin/cli.js",
+    "ao": "./bin/cli.js"
   },
   "files": [
     "bin/cli.js",

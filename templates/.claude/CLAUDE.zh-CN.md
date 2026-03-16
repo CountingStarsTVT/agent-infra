@@ -1,6 +1,6 @@
 # 项目 - Claude Code 指令
 
-本仓库使用 ai-collaboration-installer 进行多 AI 协作基础设施管理。
+本仓库使用 agent-orchestrator 进行多 AI 协作基础设施管理。
 
 ## 快速命令
 

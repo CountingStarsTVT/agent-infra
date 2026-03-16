@@ -5,29 +5,29 @@ import { VERSION } from '../lib/version.js';
 const major = parseInt(process.versions.node.split('.')[0], 10);
 if (major < 18) {
   process.stderr.write(
-    `ai-collaboration-installer requires Node.js >= 18 (current: ${process.version})\n`
+    `agent-orchestrator requires Node.js >= 18 (current: ${process.version})\n`
   );
   process.exit(1);
 }
 
-const USAGE = `ai-collaboration-installer - bootstrap AI collaboration infrastructure
+const USAGE = `agent-orchestrator - bootstrap AI collaboration infrastructure
 
 Usage:
-  ai-collaboration-installer init        Initialize a new project with update-ai-collaboration seed command
-  ai-collaboration-installer update      Update seed files and sync file registry for an existing project
-  ai-collaboration-installer version     Show version
-  ai-collaboration-installer help        Show this help message
+  agent-orchestrator init        Initialize a new project with update-ai-collaboration seed command
+  agent-orchestrator update      Update seed files and sync file registry for an existing project
+  agent-orchestrator version     Show version
+  agent-orchestrator help        Show this help message
 
-Shorthand: aci (e.g. aci init)
+Shorthand: ao (e.g. ao init)
 
 Install methods:
-  npm:   npm install -g ai-collaboration-installer
-  npx:   npx ai-collaboration-installer init
-  curl:  curl -fsSL https://raw.githubusercontent.com/fitlab-ai/ai-collaboration-installer/main/install.sh | sh
+  npm:   npm install -g agent-orchestrator
+  npx:   npx agent-orchestrator init
+  curl:  curl -fsSL https://raw.githubusercontent.com/fitlab-ai/agent-orchestrator/main/install.sh | sh
 
 Examples:
-  cd my-project && ai-collaboration-installer init
-  npx ai-collaboration-installer init
+  cd my-project && agent-orchestrator init
+  npx agent-orchestrator init
 `;
 
 const command = process.argv[2] || '';
@@ -50,7 +50,7 @@ switch (command) {
     break;
   }
   case 'version': {
-    console.log(`ai-collaboration-installer ${VERSION}`);
+    console.log(`agent-orchestrator ${VERSION}`);
     break;
   }
   case 'help':

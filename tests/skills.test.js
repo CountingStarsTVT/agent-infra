@@ -12,12 +12,12 @@ import {
 
 test("update-ai-collaboration instructions point to templates rendering", () => {
   const updateSkill = read(".agents/skills/update-ai-collaboration/SKILL.md");
-  const geminiUpdate = read(".gemini/commands/ai-collaboration-installer/update-ai-collaboration.toml");
+  const geminiUpdate = read(".gemini/commands/agent-orchestrator/update-ai-collaboration.toml");
 
   assert.match(updateSkill, /templateSource/);
   assert.match(updateSkill, /templates\//);
   assert.match(updateSkill, /git.*pull/);
-  assert.match(updateSkill, /aci update/);
+  assert.match(updateSkill, /ao update/);
   assert.match(geminiUpdate, /SKILL\.md/);
 });
 

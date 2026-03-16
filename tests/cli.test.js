@@ -17,7 +17,7 @@ function pathExists(targetPath) {
 }
 
 function ensureCloneInstallFixture() {
-  const installDir = path.join(os.homedir(), ".ai-collaboration-installer");
+  const installDir = path.join(os.homedir(), ".agent-orchestrator");
   if (pathExists(installDir)) {
     return () => {};
   }
@@ -34,10 +34,10 @@ test("bootstrap CLI files exist", () => {
 
   const installSh = read("install.sh");
   assert.match(installSh, /git clone/);
-  assert.match(installSh, /\.ai-collaboration-installer/);
+  assert.match(installSh, /\.agent-orchestrator/);
 
   const nodeCli = read("bin/cli.js");
-  assert.match(nodeCli, /ai-collaboration-installer/);
+  assert.match(nodeCli, /agent-orchestrator/);
 
   const nodeStats = fs.statSync(filePath("bin/cli.js"));
   assert.ok(nodeStats.mode & 0o111, "bin/cli.js should be executable");
@@ -49,10 +49,10 @@ test("cli version output stays in sync with package.json", () => {
     encoding: "utf8"
   });
 
-  assert.equal(output.trim(), `ai-collaboration-installer ${pkg.version}`);
+  assert.equal(output.trim(), `agent-orchestrator ${pkg.version}`);
 });
 
-test("ai-collaboration-installer init generates seed files in a temp directory", () => {
+test("agent-orchestrator init generates seed files in a temp directory", () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-test-"));
   const cli = filePath("bin/cli.js");
 
@@ -63,7 +63,7 @@ test("ai-collaboration-installer init generates seed files in a temp directory",
     );
 
     const config = JSON.parse(
-      fs.readFileSync(path.join(tmpDir, "collaborator.json"), "utf8")
+      fs.readFileSync(path.join(tmpDir, ".aorc.json"), "utf8")
     );
     assert.equal(config.project, "testproj");
     assert.equal(config.org, "testorg");
@@ -185,7 +185,7 @@ test("build output is up-to-date", () => {
   });
 });
 
-test("ai-collaboration-installer init rejects invalid input", () => {
+test("agent-orchestrator init rejects invalid input", () => {
   const cli = filePath("bin/cli.js");
   const cases = [
     { input: 'demo"x\\ntestorg\\n\\n', desc: "project name with quote" },
@@ -208,7 +208,7 @@ test("ai-collaboration-installer init rejects invalid input", () => {
   });
 });
 
-test("ai-collaboration-installer update refreshes seed files and syncs file registry", () => {
+test("agent-orchestrator update refreshes seed files and syncs file registry", () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-update-"));
   const cli = filePath("bin/cli.js");
   const config = {
@@ -228,7 +228,7 @@ test("ai-collaboration-installer update refreshes seed files and syncs file regi
 
   try {
     fs.writeFileSync(
-      path.join(tmpDir, "collaborator.json"),
+      path.join(tmpDir, ".aorc.json"),
       JSON.stringify(config, null, 2) + "\n",
       "utf8"
     );
@@ -258,7 +258,7 @@ test("ai-collaboration-installer update refreshes seed files and syncs file regi
     assert.match(output, /Seed files updated successfully!/);
 
     const updated = JSON.parse(
-      fs.readFileSync(path.join(tmpDir, "collaborator.json"), "utf8")
+      fs.readFileSync(path.join(tmpDir, ".aorc.json"), "utf8")
     );
     assert.ok(updated.files.managed.includes(".agents/skills/"));
     assert.ok(updated.files.merged.includes("**/test.*"));
@@ -273,7 +273,7 @@ test("ai-collaboration-installer update refreshes seed files and syncs file regi
       "utf8"
     );
     assert.notEqual(skill, "stale skill\n");
-    assert.match(skill, /aci update/);
+    assert.match(skill, /ao update/);
     assert.doesNotMatch(skill, /\{\{project\}\}/);
     assert.doesNotMatch(skill, /\{\{org\}\}/);
     assert.ok(
@@ -299,7 +299,7 @@ test("ai-collaboration-installer update refreshes seed files and syncs file regi
   }
 });
 
-test("ai-collaboration-installer update requires collaborator.json", () => {
+test("agent-orchestrator update requires .aorc.json", () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ai-collab-update-"));
   const cli = filePath("bin/cli.js");
 

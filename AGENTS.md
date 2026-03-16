@@ -1,6 +1,6 @@
-# ai-collaboration-installer - AI 开发指南
+# agent-orchestrator - AI 开发指南
 
-本仓库包含 ai-collaboration-installer 模板和技能仓库，用于多 AI 协作基础设施。
+本仓库包含 agent-orchestrator 模板和技能仓库，用于多 AI 协作基础设施。
 
 ## 快速开始命令
 
@@ -29,7 +29,7 @@ node --test tests/*.test.js
    - `2024` -> `2024-2026`
 
 ### 分支命名
-使用项目前缀：`ai-collaboration-installer-feature-xxx`、`ai-collaboration-installer-bugfix-yyy`
+使用项目前缀：`agent-orchestrator-feature-xxx`、`agent-orchestrator-bugfix-yyy`
 
 ## 项目结构
 
@@ -39,7 +39,7 @@ node --test tests/*.test.js
 ├── templates/                     # 模板源文件（镜像项目目录结构）
 ├── tests/                         # 测试（Node.js 内置测试运行器）
 ├── install.sh                     # 引导安装脚本
-├── collaborator.json              # 项目配置
+├── .aorc.json              # 项目配置
 └── package.json                   # npm 测试脚本定义
 ```
 

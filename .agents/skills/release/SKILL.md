@@ -48,7 +48,7 @@ node --test tests/*.test.js
 更新以下文件中的版本号：
 
 1. `package.json` 中的 `"version": "X.Y.Z"`
-2. `collaborator.json` 中的 `"version": "X.Y.Z"`
+2. `.aorc.json` 中的 `"version": "X.Y.Z"`
 3. `SECURITY.md` 中的支持版本表格（`v{MAJOR}.{MINOR}.x | Supported`，`< v{MAJOR}.{MINOR}.0 | Not Supported`）
 4. `SECURITY.zh-CN.md` 中的支持版本表格（`v{MAJOR}.{MINOR}.x | 支持中`，`< v{MAJOR}.{MINOR}.0 | 不再支持`）
 
@@ -111,7 +111,7 @@ git tag v{version}
 
 3.（可选）生成发布说明：
    - Claude Code / OpenCode：/create-release-note {version}
-   - Gemini CLI：/ai-collaboration-installer:create-release-note {version}
+   - Gemini CLI：/agent-orchestrator:create-release-note {version}
    - Codex CLI：$create-release-note {version}
 ```
 

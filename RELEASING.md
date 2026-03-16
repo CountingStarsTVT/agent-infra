@@ -2,13 +2,13 @@
 
 ## 目标
 
-本文档定义 `ai-collaboration-installer` 的版本策略、发布前检查项和标准发布流程，确保 CLI、模板和仓库元数据在每次发布时保持一致。
+本文档定义 `agent-orchestrator` 的版本策略、发布前检查项和标准发布流程，确保 CLI、模板和仓库元数据在每次发布时保持一致。
 
 ## 版本号策略
 
 项目使用语义化版本（SemVer）：`MAJOR.MINOR.PATCH`。
 
-- `MAJOR`：CLI 命令发生不兼容变更、模板目录结构出现破坏性调整、移除或重定义 `collaborator.json` 公共配置项
+- `MAJOR`：CLI 命令发生不兼容变更、模板目录结构出现破坏性调整、移除或重定义 `.aorc.json` 公共配置项
 - `MINOR`：新增 AI 工具支持、新增技能或工作流模板、新增 CLI 功能且保持向后兼容
 - `PATCH`：Bug 修复、模板内容修正、文档更新、非破坏性流程优化
 
@@ -19,12 +19,12 @@
 发布版本必须同时更新以下两个文件，并保持完全一致：
 
 - `package.json`
-- `collaborator.json`
+- `.aorc.json`
 
 其中：
 
 - `package.json` 表示 CLI 包版本
-- `collaborator.json` 表示模板和协作基线版本
+- `.aorc.json` 表示模板和协作基线版本
 
 开发期版本使用 `-alpha.N` 后缀，例如 `0.1.0-alpha.1`，用于明确标识当前版本尚未正式发布。
 
@@ -35,7 +35,7 @@
 发版前必须确认以下事项：
 
 - 工作区干净，没有未提交变更
-- `package.json` 与 `collaborator.json` 的版本号一致
+- `package.json` 与 `.aorc.json` 的版本号一致
 - `node --test tests/*.test.js` 全部通过
 - 待发布内容已经过代码审查
 - 本次变更的 PR 标签和标题足以生成准确的 GitHub Release Notes
@@ -48,7 +48,7 @@
 在 AI TUI 中执行 `release` 技能：
 
 - Claude Code / OpenCode：`/release X.Y.Z`
-- Gemini CLI：`/ai-collaboration-installer:release X.Y.Z`
+- Gemini CLI：`/agent-orchestrator:release X.Y.Z`
 - Codex CLI：`$release X.Y.Z`
 
 该技能负责：
@@ -57,7 +57,7 @@
 - 检查工作区是否干净
 - 警告当前分支是否不是 `main`
 - 运行测试
-- 同步更新 `package.json` 和 `collaborator.json`
+- 同步更新 `package.json` 和 `.aorc.json`
 - 创建发布提交和本地标签
 
 ### 2. 推送分支和标签
@@ -81,7 +81,7 @@ git push origin vX.Y.Z
 如需先在本地整理说明，可执行：
 
 - Claude Code / OpenCode：`/create-release-note X.Y.Z [PREVIOUS_VERSION]`
-- Gemini CLI：`/ai-collaboration-installer:create-release-note X.Y.Z [PREVIOUS_VERSION]`
+- Gemini CLI：`/agent-orchestrator:create-release-note X.Y.Z [PREVIOUS_VERSION]`
 - Codex CLI：`$create-release-note X.Y.Z [PREVIOUS_VERSION]`
 
 如果 GitHub 自动生成的说明已经足够，可以直接使用 Release 页面内容；否则手动补充亮点、迁移提示和已知限制。

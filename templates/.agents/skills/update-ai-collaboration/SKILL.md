@@ -2,7 +2,7 @@
 name: update-ai-collaboration
 description: >
   Update the current project's AI collaboration infrastructure
-  and project governance to match the latest ai-collaboration-installer
+  and project governance to match the latest agent-orchestrator
   templates. Intelligently merges template changes while
   preserving project-specific customizations.
 ---
@@ -28,12 +28,12 @@ Execute the following command to handle all deterministic steps at once:
 node .agents/skills/update-ai-collaboration/scripts/sync-templates.js
 ```
 
-The script reads `collaborator.json` (including `templateSource`, default `templates/`) and automatically performs:
+The script reads `.aorc.json` (including `templateSource`, default `templates/`) and automatically performs:
 - git pull to fetch latest templates
-- File registry sync (`defaults.json` → `collaborator.json`)
+- File registry sync (`defaults.json` → `.aorc.json`)
 - All managed files (language selection → exclude merged/ejected → placeholder rendering → overwrite)
 - Ejected files (create only on first install)
-- `collaborator.json` update (`templateVersion`, file lists)
+- `.aorc.json` update (`templateVersion`, file lists)
 
 The script outputs JSON to stdout. Parse and record the report.
 
@@ -46,14 +46,14 @@ The script outputs JSON to stdout. Parse and record the report.
   - Each item has `target` (project-relative path) and `template` (template-root-relative path)
 - `registryAdded`: newly added file registry entries
 - `selfUpdate`: whether this is a self-update scenario
-- `configUpdated`: whether `collaborator.json` was updated
+- `configUpdated`: whether `.aorc.json` was updated
 
 ## Phase B: Process merged files (AI intelligent merge)
 
 Process each item in the report's `merged.pending` list:
 
 1. Read the template file from `<templateRoot>/<template>`
-2. Render placeholders: replace double-brace `project` and `org` placeholders with actual values from collaborator.json
+2. Render placeholders: replace double-brace `project` and `org` placeholders with actual values from .aorc.json
 3. Read the current local file (`<project-root>/<target>`)
 
 **If the local file does not exist** (first-time setup), write the rendered
@@ -120,7 +120,7 @@ warning to the end of the report:
 > **Rationale**: The current execution used the old skill logic; the new version
 > may contain additional processing steps. Running again ensures the new logic
 > is fully applied.
-> Alternatively, users can run `aci update` before executing the skill to
+> Alternatively, users can run `ao update` before executing the skill to
 > pre-update the seed files and avoid the need for a second run.
 
 ### Output report

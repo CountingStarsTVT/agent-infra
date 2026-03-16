@@ -1,12 +1,12 @@
-# AI Collaboration Installer
+# Agent Orchestrator
 
 A template and skill repository for initializing and maintaining AI multi-tool collaboration infrastructure and project governance across software projects.
 
 [中文版](README.zh-CN.md)
 
-## What is ai-collaboration-installer?
+## What is agent-orchestrator?
 
-ai-collaboration-installer provides standardized configuration for AI TUI tools (Claude Code, Codex, Gemini CLI, OpenCode) to collaborate effectively on the same project. A lightweight bootstrap CLI seeds the first command; all subsequent operations are AI skill-driven.
+agent-orchestrator provides standardized configuration for AI TUI tools (Claude Code, Codex, Gemini CLI, OpenCode) to collaborate effectively on the same project. A lightweight bootstrap CLI seeds the first command; all subsequent operations are AI skill-driven.
 
 ### Key Features
 
@@ -19,39 +19,39 @@ ai-collaboration-installer provides standardized configuration for AI TUI tools 
 
 ## Quick Start
 
-### 1. Install ai-collaboration-installer
+### 1. Install agent-orchestrator
 
 **Option A — Shell script (recommended)**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/fitlab-ai/ai-collaboration-installer/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/fitlab-ai/agent-orchestrator/main/install.sh | sh
 ```
 
 **Option B — Install from source**
 
 ```bash
-git clone https://github.com/fitlab-ai/ai-collaboration-installer.git
-cd ai-collaboration-installer
+git clone https://github.com/fitlab-ai/agent-orchestrator.git
+cd agent-orchestrator
 sh install.sh
 ```
 
 **Option C — npm** *(not yet published)*
 
 ```bash
-npm install -g ai-collaboration-installer
+npm install -g agent-orchestrator
 ```
 
 ### 2. Initialize a new project
 
 ```bash
 cd my-project
-aci init
-# or: ai-collaboration-installer init
+ao init
+# or: agent-orchestrator init
 ```
 
-The CLI will interactively collect project info (name, org, language, etc.), install the `update-ai-collaboration` seed command for all AI TUIs, and generate `collaborator.json`.
+The CLI will interactively collect project info (name, org, language, etc.), install the `update-ai-collaboration` seed command for all AI TUIs, and generate `.aorc.json`.
 
-> **Tip:** `aci` is a shorthand for `ai-collaboration-installer`. Both commands are equivalent.
+> **Tip:** `ao` is a shorthand for `agent-orchestrator`. Both commands are equivalent.
 
 ### 3. Render the full infrastructure
 
@@ -85,7 +85,7 @@ my-project/
 ├── CONTRIBUTING.md        # Development guide
 ├── SECURITY.md            # Security policy (English)
 ├── SECURITY.zh-CN.md      # Security policy (Chinese)
-└── collaborator.json      # Central configuration
+└── .aorc.json      # Central configuration
 ```
 
 ### Built-in AI Skills
@@ -141,15 +141,15 @@ analyze-issue #42                   Create task from GitHub Issue
 
 | Strategy | Meaning | Update Behavior |
 |----------|---------|----------------|
-| **managed** | ai-collaboration-installer fully controls | Overwrite on update; users should not modify |
+| **managed** | agent-orchestrator fully controls | Overwrite on update; users should not modify |
 | **merged** | Template + user customizations coexist | AI intelligent merge preserving user additions |
 | **ejected** | Generated only on first run | Never updated |
 
-Users can adjust strategies per file in `collaborator.json`.
+Users can adjust strategies per file in `.aorc.json`.
 
 ## Version Management
 
-Uses semantic versioning via git tags. Version tracked in `collaborator.json`.
+Uses semantic versioning via git tags. Version tracked in `.aorc.json`.
 
 ## Contributing
 

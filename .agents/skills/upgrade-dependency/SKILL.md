@@ -63,7 +63,7 @@ node --test tests/*.test.js
 ```
 下一步 - 提交代码：
   - Claude Code / OpenCode：/commit
-  - Gemini CLI：/ai-collaboration-installer:commit
+  - Gemini CLI：/agent-orchestrator:commit
   - Codex CLI：$commit
 ```
 

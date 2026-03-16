@@ -1,6 +1,6 @@
 {
   "version": "0.1.1",
-  "project": "ai-collaboration-installer",
+  "project": "agent-orchestrator",
   "org": "fitlab-ai",
   "language": "zh-CN",
   "templateSource": "templates/",

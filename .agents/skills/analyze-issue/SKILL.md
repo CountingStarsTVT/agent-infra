@@ -138,7 +138,7 @@ Issue #{number} 分析完成。
 
 下一步 - 审查分析报告，然后设计技术方案：
   - Claude Code / OpenCode：/plan-task {task-id}
-  - Gemini CLI：/ai-collaboration-installer:plan-task {task-id}
+  - Gemini CLI：/agent-orchestrator:plan-task {task-id}
   - Codex CLI：$plan-task {task-id}
 ```
 

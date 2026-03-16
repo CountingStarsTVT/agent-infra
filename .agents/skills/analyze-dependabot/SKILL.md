@@ -162,11 +162,11 @@ date "+%Y-%m-%d %H:%M:%S"
 下一步：
 - 修复：
   - Claude Code / OpenCode：/plan-task {task-id}
-  - Gemini CLI：/ai-collaboration-installer:plan-task {task-id}
+  - Gemini CLI：/agent-orchestrator:plan-task {task-id}
   - Codex CLI：$plan-task {task-id}
 - 不适用：
   - Claude Code / OpenCode：/close-dependabot {alert-number}
-  - Gemini CLI：/ai-collaboration-installer:close-dependabot {alert-number}
+  - Gemini CLI：/agent-orchestrator:close-dependabot {alert-number}
   - Codex CLI：$close-dependabot {alert-number}
 ```
 

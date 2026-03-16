@@ -45,7 +45,7 @@ test("syncTemplates respects templateSource and stays idempotent", async () => {
     writeFile(templateRoot, "child.md", "Top\n");
     writeFile(templateRoot, "nested/child.md", "Nested\n");
 
-    writeJson(projectRoot, "collaborator.json", {
+    writeJson(projectRoot, ".aorc.json", {
       project: "demo",
       org: "acme",
       language: "zh-CN",
@@ -69,9 +69,9 @@ test("syncTemplates respects templateSource and stays idempotent", async () => {
     const { syncTemplates } = await loadFreshEsm(".agents/skills/update-ai-collaboration/scripts/sync-templates.js");
 
     const firstReport = syncTemplates(projectRoot);
-    const afterFirstRun = fs.readFileSync(path.join(projectRoot, "collaborator.json"), "utf8");
+    const afterFirstRun = fs.readFileSync(path.join(projectRoot, ".aorc.json"), "utf8");
     const secondReport = syncTemplates(projectRoot);
-    const afterSecondRun = fs.readFileSync(path.join(projectRoot, "collaborator.json"), "utf8");
+    const afterSecondRun = fs.readFileSync(path.join(projectRoot, ".aorc.json"), "utf8");
 
     assert.equal(normalize(firstReport.templateRoot), normalize(templateRoot));
     assert.ok(
@@ -119,7 +119,7 @@ test("syncTemplates runs git pull and reports the install SHA when clone metadat
 
   try {
     const homeDir = path.join(tmpDir, "home");
-    const installDir = path.join(homeDir, ".ai-collaboration-installer");
+    const installDir = path.join(homeDir, ".agent-orchestrator");
     const projectRoot = path.join(tmpDir, "project");
     const templateRoot = path.join(tmpDir, "template-root");
     const commands = [];
@@ -129,7 +129,7 @@ test("syncTemplates runs git pull and reports the install SHA when clone metadat
     fs.mkdirSync(templateRoot, { recursive: true });
 
     writeFile(templateRoot, "README.md", "Hello {{project}}\n");
-    writeJson(projectRoot, "collaborator.json", {
+    writeJson(projectRoot, ".aorc.json", {
       project: "demo",
       org: "acme",
       language: "en",
@@ -188,7 +188,7 @@ test("syncTemplates outputs both SECURITY language variants for zh-CN merged fil
 
     writeFile(templateRoot, "SECURITY.md", "Security EN\n");
     writeFile(templateRoot, "SECURITY.zh-CN.md", "Security ZH\n");
-    writeJson(projectRoot, "collaborator.json", {
+    writeJson(projectRoot, ".aorc.json", {
       project: "demo",
       org: "acme",
       language: "zh-CN",
@@ -239,7 +239,7 @@ test("syncTemplates outputs both SECURITY language variants for en merged files"
 
     writeFile(templateRoot, "SECURITY.md", "Security EN\n");
     writeFile(templateRoot, "SECURITY.zh-CN.md", "Security ZH\n");
-    writeJson(projectRoot, "collaborator.json", {
+    writeJson(projectRoot, ".aorc.json", {
       project: "demo",
       org: "acme",
       language: "en",
@@ -293,7 +293,7 @@ test("syncTemplates removes stale managed files but preserves merged, ejected, a
     writeFile(templateRoot, ".github/workflows/release.yml", "name: release\n");
     writeFile(templateRoot, "preserved.md", "Existing\n");
 
-    writeJson(projectRoot, "collaborator.json", {
+    writeJson(projectRoot, ".aorc.json", {
       project: "demo",
       org: "acme",
       language: "en",
@@ -360,7 +360,7 @@ test("syncTemplates preserves stale files that match merged glob patterns", asyn
     fs.mkdirSync(templateRoot, { recursive: true });
 
     writeFile(templateRoot, "docs/guide.md", "Guide\n");
-    writeJson(projectRoot, "collaborator.json", {
+    writeJson(projectRoot, ".aorc.json", {
       project: "demo",
       org: "acme",
       language: "en",

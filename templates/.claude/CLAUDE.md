@@ -1,6 +1,6 @@
 # Project - Claude Code Instructions
 
-This repository uses ai-collaboration-installer for multi-AI collaboration infrastructure.
+This repository uses agent-orchestrator for multi-AI collaboration infrastructure.
 
 ## Quick Commands
 

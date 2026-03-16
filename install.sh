@@ -1,15 +1,15 @@
 #!/bin/sh
-# ai-collaboration-installer bootstrap installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/fitlab-ai/ai-collaboration-installer/main/install.sh | sh
+# agent-orchestrator bootstrap installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/fitlab-ai/agent-orchestrator/main/install.sh | sh
 set -e
 
 REPO_OWNER="fitlab-ai"
-REPO_NAME="ai-collaboration-installer"
+REPO_NAME="agent-orchestrator"
 REPO_SSH="git@github.com:${REPO_OWNER}/${REPO_NAME}.git"
 REPO_HTTPS="https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
-INSTALL_DIR="$HOME/.ai-collaboration-installer"
+INSTALL_DIR="$HOME/.agent-orchestrator"
 # Symlink name for the installed command in PATH.
-BIN_NAME="ai-collaboration-installer"
+BIN_NAME="agent-orchestrator"
 
 # ---------- helpers ----------
 info()  { printf '  \033[1;34m>\033[0m %s\n' "$*"; }
@@ -45,10 +45,10 @@ if [ -d "$INSTALL_DIR" ]; then
 else
   CLONE_METHOD=$(select_repo_url)
   if [ "$CLONE_METHOD" = "gh" ]; then
-    info "Cloning ai-collaboration-installer via gh CLI to $INSTALL_DIR ..."
+    info "Cloning agent-orchestrator via gh CLI to $INSTALL_DIR ..."
     gh repo clone "${REPO_OWNER}/${REPO_NAME}" "$INSTALL_DIR" -- --quiet
   else
-    info "Cloning ai-collaboration-installer to $INSTALL_DIR ..."
+    info "Cloning agent-orchestrator to $INSTALL_DIR ..."
     git clone --quiet "$CLONE_METHOD" "$INSTALL_DIR"
   fi
   ok "Cloned successfully."
@@ -86,8 +86,8 @@ else
 fi
 
 ln -sf "$BIN_SOURCE" "$BIN_DIR/$BIN_NAME"
-ln -sf "$BIN_SOURCE" "$BIN_DIR/aci"
-ok "Installed $BIN_NAME to $BIN_DIR/ (shorthand: aci)"
+ln -sf "$BIN_SOURCE" "$BIN_DIR/ao"
+ok "Installed $BIN_NAME to $BIN_DIR/ (shorthand: ao)"
 
 # ---------- PATH hint ----------
 if ! command -v "$BIN_NAME" >/dev/null 2>&1; then
@@ -99,8 +99,8 @@ fi
 
 # ---------- done ----------
 echo ""
-ok "ai-collaboration-installer installed successfully!"
+ok "agent-orchestrator installed successfully!"
 echo ""
 echo "  Next step: cd into your project and run:"
-echo "    ai-collaboration-installer init  (or: aci init)"
+echo "    agent-orchestrator init  (or: ao init)"
 echo ""

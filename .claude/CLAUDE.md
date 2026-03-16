@@ -1,6 +1,6 @@
 # 项目 - Claude Code 指令
 
-本仓库使用 ai-collaboration-installer 进行多 AI 协作基础设施管理。
+本仓库使用 agent-orchestrator 进行多 AI 协作基础设施管理。
 
 ## 快速命令
 
@@ -30,7 +30,7 @@ node --test tests/*.test.js
 │   └── *.md                       # 根级模板文件
 ├── tests/                         # 测试（Node.js 内置测试运行器）
 ├── install.sh                     # 引导安装脚本
-├── collaborator.json              # 项目配置
+├── .aorc.json              # 项目配置
 └── package.json                   # npm 测试脚本定义
 ```
 
@@ -46,7 +46,7 @@ node --test tests/*.test.js
 2. 更新格式：`2024-2025` -> `2024-2026`（假设当前年份为 2026）
 
 ### 分支命名
-使用项目前缀：`ai-collaboration-installer-feature-xxx`、`ai-collaboration-installer-bugfix-yyy`
+使用项目前缀：`agent-orchestrator-feature-xxx`、`agent-orchestrator-bugfix-yyy`
 
 ## 测试要求
 

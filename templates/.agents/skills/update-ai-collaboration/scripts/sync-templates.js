@@ -3,7 +3,7 @@
  * sync-templates.js — Deterministic template sync for managed & ejected files.
  *
  * Handles SKILL steps: 2 (git pull), 3.0 (registry sync), 4 (managed),
- * 6 (ejected), 7 (collaborator.json update).
+ * 6 (ejected), 7 (.aorc.json update).
  *
  * Merged files (step 5) are NOT handled — they require AI semantic merge.
  * The report includes `merged.pending` so the AI knows what to process.
@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 
 // Keep these helpers aligned with lib/paths.js for clone installs.
 function resolveInstallDir() {
-  return path.join(os.homedir(), '.ai-collaboration-installer');
+  return path.join(os.homedir(), '.agent-orchestrator');
 }
 
 function resolveTemplateDir() {
@@ -222,15 +222,15 @@ function langSelect(rels, lang, allSet, project) {
 }
 
 function syncTemplates(projectRoot) {
-  const cfgPath = path.join(projectRoot, 'collaborator.json');
+  const cfgPath = path.join(projectRoot, '.aorc.json');
   if (!fs.existsSync(cfgPath)) {
-    return { error: 'No collaborator.json in project root.' };
+    return { error: 'No .aorc.json in project root.' };
   }
 
   const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
   const templateRoot = resolveProjectTemplateDir(projectRoot, cfg.templateSource);
   if (!templateRoot) {
-    return { error: 'Template source not found. Install: curl -fsSL https://raw.githubusercontent.com/fitlab-ai/ai-collaboration-installer/main/install.sh | sh' };
+    return { error: 'Template source not found. Install: curl -fsSL https://raw.githubusercontent.com/fitlab-ai/agent-orchestrator/main/install.sh | sh' };
   }
   const installDir = resolveInstallDir();
 

@@ -85,7 +85,7 @@ test("init-project files have been removed", () => {
 });
 
 test("update-ai-collaboration template copies stay in sync with working files", () => {
-  const collaborator = JSON.parse(read("collaborator.json"));
+  const collaborator = JSON.parse(read(".aorc.json"));
   const project = collaborator.project;
   const org = collaborator.org;
   const lang = collaborator.language;
@@ -110,12 +110,12 @@ test("README documents the bootstrap installation flow", () => {
   const readmeZh = read("README.zh-CN.md");
 
   assert.match(readme, /install\.sh/);
-  assert.match(readme, /aci init/);
+  assert.match(readme, /ao init/);
   assert.match(readme, /update-ai-collaboration/);
   assert.match(readme, /npm install -g/);
   assert.match(readme, /Install from source/);
   assert.match(readmeZh, /install\.sh/);
-  assert.match(readmeZh, /aci init/);
+  assert.match(readmeZh, /ao init/);
   assert.match(readmeZh, /update-ai-collaboration/);
   assert.match(readmeZh, /npm install -g/);
   assert.match(readmeZh, /源码安装/);
