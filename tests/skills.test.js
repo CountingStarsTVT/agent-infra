@@ -59,11 +59,14 @@ test("init-milestones skill documents milestone bootstrap flow and command disco
   ].forEach((relativePath) => {
     assertContainsPatterns(relativePath, [
       /General Backlog/,
+      /--history/,
       /git tag --list 'v\*' --sort=-v:refname \| head -1/,
+      /git tag --list 'v\*' --sort=v:refname/,
       /package\.json/,
       /0\.1\.0/,
       /Issues that we want to resolve in .* line/,
       /Issues that we want to release in v/,
+      /state.*closed/,
       /gh api "repos\/\$repo\/milestones"/,
       /Milestone titles are treated as the idempotency key/
     ]);

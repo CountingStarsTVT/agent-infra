@@ -146,7 +146,11 @@ const commandSpecs = {
     zh: "任务描述：$ARGUMENTS"
   },
   "init-labels": {},
-  "init-milestones": {},
+  "init-milestones": {
+    usage: "[--history]",
+    en: "Initialize milestones: $ARGUMENTS",
+    zh: "初始化里程碑：$ARGUMENTS"
+  },
   "implement-task": {
     usage: "<task-id>",
     en: "Implement task $1.",
