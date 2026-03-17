@@ -166,14 +166,21 @@ test("sync-issue skill accepts issue numbers and keeps task-id compatibility", (
   });
 });
 
-test("sync-issue skill documents issue type sync, idempotent comments, and absolute links", () => {
+test("sync-issue skill documents issue type sync, timeline comments, and absolute links", () => {
   skillDocPaths("sync-issue").forEach((relativePath) => {
     const content = read(relativePath);
 
     assertContainsPatterns(relativePath, [
       /gh api "orgs\/\$owner\/issue-types"/,
       /gh api "repos\/\$repo\/issues\/\{issue-number\}" -X PATCH -f type="\{name\}"/,
-      /<!-- sync-issue:\{task-id\}:\{step\} -->/,
+      /<!-- sync-issue:\{task-id\}:\{file-stem\} -->/,
+      /其中 `\{file-stem\}` 为去掉 `\.md` 后缀后的文件名|Where `\{file-stem\}` is the filename without the `\.md` suffix/,
+      /implementation-r2/,
+      /review-r2/,
+      /analysis` 和 `plan` 无轮次概念，固定排在最前，且 `analysis` 必须先于 `plan`|`analysis` and `plan` have no round number and must always appear first, with `analysis` before `plan`/,
+      /其余产物按轮次排序：Round 1（无后缀）→ Round 2（`-r2`）→ Round 3（`-r3`）→ …|Sort the remaining artifacts by round: Round 1 \(no suffix\) → Round 2 \(`-r2`\) → Round 3 \(`-r3`\) → \.\.\./,
+      /summary` 始终排在最末|`summary` is always last/,
+      /不要再使用固定 5 步骤，也不要把同类型多轮次产物合并到一条评论|Do not fall back to a fixed 5-step order, and do not merge multiple rounds of the same artifact type into a single comment/,
       /gh api "repos\/\$repo\/issues\/comments\/\{comment-id\}" -X PATCH/,
       /https:\/\/github\.com\/\{owner\}\/\{repo\}\/commit\/\{commit-hash\}/,
       /https:\/\/github\.com\/\{owner\}\/\{repo\}\/pull\/\{pr-number\}/,
@@ -181,6 +188,9 @@ test("sync-issue skill documents issue type sync, idempotent comments, and absol
       /review-r\*\.md/
     ]);
 
+    assert.doesNotMatch(content, /<!-- sync-issue:\{task-id\}:\{step\} -->/);
+    assert.doesNotMatch(content, /类型优先级：`analysis` = 1，`plan` = 2，`implementation\*` = 3，`review\*` = 4，`summary` = 5|Type priority: `analysis` = 1, `plan` = 2, `implementation\*` = 3, `review\*` = 4, `summary` = 5/);
+    assert.doesNotMatch(content, /按 `analysis → plan → implementation → review → summary` 的固定顺序处理|Process steps strictly in the fixed order `analysis → plan → implementation → review → summary`\./);
     assert.doesNotMatch(content, /\.\.\/\.\.\/commit\/\{commit-hash\}/);
     assert.doesNotMatch(content, /\.\.\/\.\.\/pull\/\{pr-number\}/);
   });

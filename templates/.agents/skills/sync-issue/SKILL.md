@@ -346,9 +346,9 @@ Record one of:
 - `Milestone: {target} (assigned)` or
 - `Milestone: General Backlog (fallback)`
 
-### 9. Fetch Existing Comments and Build the Published Step Set
+### 9. Fetch Existing Comments and Build the Published Artifact Set
 
-Fetch all Issue comments once, then build a local "published step set" using hidden markers.
+Fetch all Issue comments once, then build a local "published file-stem set" using hidden markers while preparing the artifact timeline that should be posted.
 
 First fetch the comments while keeping both the comment id and body:
 
@@ -360,31 +360,41 @@ gh api "repos/$repo/issues/{issue-number}/comments" \
   --jq '.[] | {id, body}' > "$comments_jsonl"
 ```
 
-The fixed publication order must be:
-1. `analysis`
-2. `plan`
-3. `implementation`
-4. `review`
-5. `summary`
+Scan the task directory for these artifact files and include only the ones that exist:
+- `analysis.md`
+- `plan.md`
+- `implementation.md`
+- `implementation-r*.md`
+- `review.md`
+- `review-r*.md`
 
 The first line of every synced comment must contain a hidden marker:
 
 ```html
-<!-- sync-issue:{task-id}:{step} -->
+<!-- sync-issue:{task-id}:{file-stem} -->
 ```
 
-Where `{step}` is one of the 5 fixed step names above.
+Where `{file-stem}` is the filename without the `.md` suffix, such as `analysis`, `plan`, `implementation`, `implementation-r2`, or `review-r3`; `summary` still uses the literal `summary`.
 
-For each step, detect whether it is already published by searching the local comment dump:
+The publication order must be derived from these sorting rules:
+1. `analysis` and `plan` have no round number and must always appear first, with `analysis` before `plan`
+2. Sort the remaining artifacts by round: Round 1 (no suffix) → Round 2 (`-r2`) → Round 3 (`-r3`) → ...
+3. Within the same round, `implementation` must appear before `review`
+4. `summary` is always last
+
+For example, the ordered result should look like:
+`analysis → plan → implementation → review → implementation-r2 → review-r2 → review-r3 → summary`
+
+For each `{file-stem}`, detect whether it is already published by searching the local comment dump:
 
 ```bash
-grep -qF "<!-- sync-issue:{task-id}:{step} -->" "$comments_jsonl"
+grep -qF "<!-- sync-issue:{task-id}:{file-stem} -->" "$comments_jsonl"
 ```
 
-- Match found: the step is already published and should be skipped by default
-- No match: the step has not been published yet and may create a new comment
+- Match found: the artifact is already published and should be skipped by default
+- No match: the artifact has not been published yet and may create a new comment
 
-For the `summary` step, also resolve the existing comment id for later updates:
+For the `summary` artifact, also resolve the existing comment id for later updates:
 
 ```bash
 summary_comment_id="$(
@@ -394,21 +404,21 @@ summary_comment_id="$(
 ```
 
 Idempotency requirements:
-- The first execution should publish only the steps whose source artifacts already exist
-- The next execution must skip already published steps and publish only newly available steps
-- If all 5 steps are already published and the `summary` body has not changed, the run must perform zero comment writes
+- The first execution should publish only the artifact comments whose source files already exist
+- The next execution must skip already published files and publish only newly available artifacts such as `implementation-r2` or `review-r2`
+- If all artifact comments are already published and the `summary` body has not changed, the run must perform zero comment writes
 - If `summary` already exists but the delivery state changed, edit the existing summary comment instead of creating a second summary comment
 
 ### 10. Publish Context Files Step by Step
 
-Process steps strictly in the fixed order `analysis → plan → implementation → review → summary`.
+Process the sorted artifact list produced in step 9. Do not fall back to a fixed 5-step order, and do not merge multiple rounds of the same artifact type into a single comment.
 
-**a) Prepare the body for each step**
+**a) Prepare the body for each artifact**
 
 - `analysis`: publish the raw contents of `analysis.md`
 - `plan`: publish the raw contents of `plan.md`
-- `implementation`: merge `implementation.md` and `implementation-r*.md` into one comment in round order, separated by subsection headings such as `### implementation.md` and `### implementation-r2.md`
-- `review`: merge `review.md` and `review-r*.md` into one comment in round order, separated by subsection headings such as `### review.md` and `### review-r2.md`
+- `implementation` and `implementation-r{N}`: publish one comment per file using the raw implementation report content
+- `review` and `review-r{N}`: publish one comment per file using the raw review report content
 - `summary`: generate a compact delivery summary that contains only the current delivery state and GitHub-accessible absolute links
 
 Except for `summary`, publish the original artifact text rather than generating another stakeholder summary.
@@ -416,8 +426,8 @@ Except for `summary`, publish the original artifact text rather than generating 
 Use this common comment structure:
 
 ```markdown
-<!-- sync-issue:{task-id}:{step} -->
-## {step title}
+<!-- sync-issue:{task-id}:{file-stem} -->
+## {artifact title}
 
 {raw artifact content or summary content}
 
@@ -425,11 +435,15 @@ Use this common comment structure:
 *Auto-generated by AI · Internal tracking: {task-id}*
 ```
 
-Recommended step titles:
+Recommended title mapping:
 - `analysis` -> `Requirement Analysis`
 - `plan` -> `Technical Plan`
-- `implementation` -> `Implementation Report`
-- `review` -> `Review Report`
+- `implementation` -> `Implementation Report (Round 1)`
+- `implementation-r2` -> `Implementation Report (Round 2)`
+- `implementation-r{N}` -> `Implementation Report (Round {N})`
+- `review` -> `Review Report (Round 1)`
+- `review-r2` -> `Review Report (Round 2)`
+- `review-r{N}` -> `Review Report (Round {N})`
 - `summary` -> `Delivery Summary`
 
 Recommended `summary` comment format:
@@ -457,15 +471,15 @@ Mode-specific status text:
 - Mode B: `PR stage, currently #{pr-number} (OPEN or MERGED)`
 - Mode C: `In development, current step is {current_step}`
 
-**b) Skip missing or already published steps**
+**b) Skip missing or already published artifacts**
 
-- For `analysis`, `plan`, `implementation`, and `review`: if the source file does not exist, skip without error
-- For any step: if the marker already exists, skip by default
+- For `analysis.md`, `plan.md`, `implementation*.md`, and `review*.md`: if the source file does not exist, skip without error
+- For any artifact: if the marker already exists, skip by default
 - For `summary`: always regenerate the candidate body so you can decide whether an update is required
 
 **c) Create new comments**
 
-When a step has not been published yet, run:
+When an artifact has not been published yet, run:
 
 ```bash
 gh issue comment {issue-number} --body "$(cat <<'EOF'
@@ -489,9 +503,9 @@ If the body is unchanged, do nothing.
 
 **e) Zero-write scenario**
 
-If every step is already synced and `summary` does not need an update:
+If every artifact is already synced and `summary` does not need an update:
 - Do not create any new comments
-- Explicitly tell the user: `All steps are already synced; no new content was posted`
+- Explicitly tell the user: `All artifacts are already synced; no new content was posted`
 
 ### 11. Update Task Status
 

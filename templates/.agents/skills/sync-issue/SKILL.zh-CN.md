@@ -345,9 +345,9 @@ gh api "repos/$repo/issues/{issue-number}" -X PATCH -F milestone={milestone-numb
 - `Milestone: {target} (assigned)` 或
 - `Milestone: General Backlog (fallback)`
 
-### 9. 拉取已有评论并构建已发布步骤集合
+### 9. 拉取已有评论并构建已发布文件集合
 
-一次性拉取 Issue 的全部评论，并基于隐藏标识构建“已发布步骤集合”。
+一次性拉取 Issue 的全部评论，并基于隐藏标识构建“已发布文件 stem 集合”，同时在本地构建待发布的产物时间线。
 
 先拉取评论（保留 comment id 与 body）：
 
@@ -359,31 +359,41 @@ gh api "repos/$repo/issues/{issue-number}/comments" \
   --jq '.[] | {id, body}' > "$comments_jsonl"
 ```
 
-固定步骤顺序必须是：
-1. `analysis`
-2. `plan`
-3. `implementation`
-4. `review`
-5. `summary`
+扫描任务目录中以下产物文件（存在才纳入待发布集合）：
+- `analysis.md`
+- `plan.md`
+- `implementation.md`
+- `implementation-r*.md`
+- `review.md`
+- `review-r*.md`
 
 每条同步评论的第一行必须插入隐藏标识：
 
 ```html
-<!-- sync-issue:{task-id}:{step} -->
+<!-- sync-issue:{task-id}:{file-stem} -->
 ```
 
-其中 `{step}` 只能是上面 5 个固定步骤名之一。
+其中 `{file-stem}` 为去掉 `.md` 后缀后的文件名，例如 `analysis`、`plan`、`implementation`、`implementation-r2`、`review-r3`；`summary` 仍使用字面量 `summary`。
 
-对每个步骤，用本地检索判断是否已发布：
+待发布时间线的排序规则必须是：
+1. `analysis` 和 `plan` 无轮次概念，固定排在最前，且 `analysis` 必须先于 `plan`
+2. 其余产物按轮次排序：Round 1（无后缀）→ Round 2（`-r2`）→ Round 3（`-r3`）→ …
+3. 同轮次内 `implementation` 必须排在 `review` 之前
+4. `summary` 始终排在最末
+
+例如，排序结果应类似：
+`analysis → plan → implementation → review → implementation-r2 → review-r2 → review-r3 → summary`
+
+对每个 `{file-stem}`，用本地检索判断是否已发布：
 
 ```bash
-grep -qF "<!-- sync-issue:{task-id}:{step} -->" "$comments_jsonl"
+grep -qF "<!-- sync-issue:{task-id}:{file-stem} -->" "$comments_jsonl"
 ```
 
-- 匹配到：该步骤已发布，后续默认跳过
-- 未匹配：该步骤尚未发布，可以创建新评论
+- 匹配到：该产物已发布，后续默认跳过
+- 未匹配：该产物尚未发布，可以创建新评论
 
-对 `summary` 步骤，额外提取评论 id 以便后续更新：
+对 `summary` 产物，额外提取评论 id 以便后续更新：
 
 ```bash
 summary_comment_id="$(
@@ -393,30 +403,30 @@ summary_comment_id="$(
 ```
 
 幂等要求：
-- 第一次执行时，只发布当前已存在产物对应的步骤
-- 第二次执行时，必须跳过已发布步骤，只补发新增步骤
-- 如果 5 个步骤都已发布，且 `summary` 内容没有变化，则本次不发布任何新评论
+- 第一次执行时，只发布当前已存在产物对应的文件评论
+- 第二次执行时，必须跳过已发布文件，只补发新增产物（例如 `implementation-r2`、`review-r2`）
+- 如果所有产物文件评论都已发布，且 `summary` 内容没有变化，则本次不发布任何新评论
 - 如果 `summary` 已发布但交付状态发生变化，只更新原评论，不新增第二条 summary 评论
 
-### 10. 逐步发布上下文文件
+### 10. 按时间线逐条发布上下文文件
 
-按 `analysis → plan → implementation → review → summary` 的固定顺序处理。
+按步骤 9 生成的已排序产物列表逐条处理，不要再使用固定 5 步骤，也不要把同类型多轮次产物合并到一条评论。
 
-**a) 为每个步骤准备评论内容**
+**a) 为每个产物准备评论内容**
 
 - `analysis`：发布 `analysis.md` 原文
 - `plan`：发布 `plan.md` 原文
-- `implementation`：将 `implementation.md` 与 `implementation-r*.md` 按轮次顺序合并到同一条评论，使用 `### implementation.md`、`### implementation-r2.md` 等小节标题分隔
-- `review`：将 `review.md` 与 `review-r*.md` 按轮次顺序合并到同一条评论，使用 `### review.md`、`### review-r2.md` 等小节标题分隔
+- `implementation`、`implementation-r{N}`：每个文件各自发布一条评论，正文直接使用对应实现报告原文
+- `review`、`review-r{N}`：每个文件各自发布一条评论，正文直接使用对应审查报告原文
 - `summary`：生成精简交付摘要，只包含当前交付状态与 GitHub 上可访问的绝对链接
 
-除 `summary` 外，其余步骤都应发布原文，不要再次压缩成摘要。
+除 `summary` 外，其余产物都应发布原文，不要再次压缩成摘要。
 
 每条评论统一格式：
 
 ```markdown
-<!-- sync-issue:{task-id}:{step} -->
-## {步骤标题}
+<!-- sync-issue:{task-id}:{file-stem} -->
+## {产物标题}
 
 {原文内容或 summary 内容}
 
@@ -424,11 +434,15 @@ summary_comment_id="$(
 *由 AI 自动生成 · 内部追踪：{task-id}*
 ```
 
-推荐步骤标题：
+推荐标题映射：
 - `analysis` -> `需求分析`
 - `plan` -> `技术方案`
-- `implementation` -> `实现报告`
-- `review` -> `审查报告`
+- `implementation` -> `实现报告（Round 1）`
+- `implementation-r2` -> `实现报告（Round 2）`
+- `implementation-r{N}` -> `实现报告（Round {N}）`
+- `review` -> `审查报告（Round 1）`
+- `review-r2` -> `审查报告（Round 2）`
+- `review-r{N}` -> `审查报告（Round {N}）`
 - `summary` -> `交付摘要`
 
 `summary` 评论建议格式：
@@ -456,15 +470,15 @@ summary_comment_id="$(
 - 模式 B：`PR 阶段，当前为 #{pr-number}（OPEN 或 MERGED）`
 - 模式 C：`开发中，当前步骤为 {current_step}`
 
-**b) 跳过已发布或缺失的步骤**
+**b) 跳过已发布或缺失的产物**
 
-- 对于 `analysis`、`plan`、`implementation`、`review`：如果对应文件不存在，直接跳过，不报错
-- 对于任意步骤：如果标识已存在，默认跳过
+- 对于 `analysis.md`、`plan.md`、`implementation*.md`、`review*.md`：如果对应文件不存在，直接跳过，不报错
+- 对于任意产物：如果标识已存在，默认跳过
 - 对于 `summary`：即使标识已存在，也要重新生成候选内容，用于比较是否需要更新
 
 **c) 发布新评论**
 
-当步骤尚未发布时，执行：
+当产物尚未发布时，执行：
 
 ```bash
 gh issue comment {issue-number} --body "$(cat <<'EOF'
@@ -488,9 +502,9 @@ EOF
 
 **e) 零操作场景**
 
-如果所有步骤都已同步，且 `summary` 无需更新：
+如果所有产物都已同步，且 `summary` 无需更新：
 - 不发布任何新评论
-- 在最终告知用户时明确说明：`所有步骤已同步，无新内容`
+- 在最终告知用户时明确说明：`所有产物已同步，无新内容`
 
 ### 11. 更新任务状态
 
