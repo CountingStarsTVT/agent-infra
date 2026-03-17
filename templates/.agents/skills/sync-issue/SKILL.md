@@ -216,7 +216,81 @@ EOF
 
 5. If task.md does not contain `pr_number`, record `Development: N/A`
 
-### 7. Generate Progress Summary
+### 7. Sync Milestone
+
+Assign a line milestone to the Issue based on the existing Issue state, explicit task configuration, and branch policy.
+
+**a) Check whether the Issue already has a milestone**
+
+Run:
+
+```bash
+gh issue view {issue-number} --json milestone --jq '.milestone.title // empty'
+```
+
+If the result is non-empty, preserve the existing milestone, record `Milestone: {existing} (preserved)`, and skip the remaining milestone sync steps.
+
+**b) Check whether task.md explicitly sets a milestone**
+
+If task.md frontmatter contains a non-empty `milestone` field, use that value as the target milestone.
+This field should point to a line milestone title or `General Backlog`; do not auto-assign a concrete release milestone.
+
+**c) Infer the target line milestone**
+
+When task.md does not explicitly set `milestone`, infer the target in this order:
+
+1. Detect the current branch:
+
+```bash
+git branch --show-current
+```
+
+- If the branch matches `{major}.{minor}.x`, target the same line milestone `{major}.{minor}.x`
+
+2. If the current branch is `main` or `master`, detect existing release branches:
+
+```bash
+git branch -a | grep -oE '[0-9]+\.[0-9]+\.x' | sort -V | tail -1
+```
+
+- If the highest release branch is `X.Y.x`, target `(X+1).0.x`
+- If no release branch exists, inspect the latest tag:
+
+```bash
+git tag --list 'v*' --sort=-v:refname | head -1
+```
+
+- When the latest tag parses as `X.Y.Z`, target `X.Y.x`
+
+3. If no rule yields a result, fall back to `General Backlog`
+
+**d) Resolve the target milestone number**
+
+Run:
+
+```bash
+repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+
+gh api "repos/$repo/milestones" --paginate \
+  --jq '.[] | select(.title=="{target}") | .number'
+```
+
+- If the target milestone does not exist, retry with `General Backlog`
+- If `General Backlog` also does not exist, record `Milestone: skipped (not found)` and skip assignment
+
+**e) Assign the Issue milestone**
+
+Once the target milestone number is known, run:
+
+```bash
+gh api "repos/$repo/issues/{issue-number}" -X PATCH -F milestone={milestone-number}
+```
+
+Record one of:
+- `Milestone: {target} (assigned)` or
+- `Milestone: General Backlog (fallback)`
+
+### 8. Generate Progress Summary
 
 Generate a clear progress summary oriented toward **project managers and stakeholders**:
 
@@ -345,7 +419,7 @@ Requirements:
 - **Logically clear**: Chronological progress flow
 - **Human-readable**: Use plain language, not jargon
 
-### 8. Post to Issue
+### 9. Post to Issue
 
 ```bash
 gh issue comment {issue-number} --body "$(cat <<'EOF'
@@ -354,7 +428,7 @@ EOF
 )"
 ```
 
-### 9. Update Task Status
+### 10. Update Task Status
 
 Get the current time:
 
@@ -368,7 +442,7 @@ Add or update `last_synced_at` field in task.md to `{current time}`.
   - {yyyy-MM-dd HH:mm:ss} — **Sync to Issue** by {agent} — Progress synced to Issue #{issue-number}
   ```
 
-### 10. Inform User
+### 11. Inform User
 
 ```
 Progress synced to Issue #{issue-number}.
@@ -377,6 +451,7 @@ Synced content:
 - Completed steps: {count}
 - Current status: {status}
 - Labels: type={type-label or skipped}, status={status-label or cleared}, in:={count added}
+- Milestone: {preserved / assigned / fallback / skipped}
 - Development: {Closes keyword appended / already linked / skipped because no PR}
 - Next step: {description or N/A}
 

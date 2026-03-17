@@ -66,7 +66,71 @@ git commit -m "chore: release v{version}"
 git tag v{version}
 ```
 
-### 步骤 6：输出摘要
+### 步骤 6：管理里程碑
+
+为已发布版本关闭对应版本里程碑，并为下一轮创建缺失的规划里程碑。
+
+```bash
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+
+repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+released_version="${MAJOR}.${MINOR}.${PATCH}"
+line_milestone="${MAJOR}.${MINOR}.x"
+next_patch_version="${MAJOR}.${MINOR}.$((PATCH + 1))"
+next_minor_version="${MAJOR}.$((MINOR + 1)).0"
+next_minor_line="${MAJOR}.$((MINOR + 1)).x"
+
+gh api "repos/$repo/milestones?state=all" --paginate \
+  --jq '.[] | [.number, .title, .state] | @tsv' > "$tmpdir/milestones.tsv"
+
+created_count=0
+
+ensure_milestone() {
+  title="$1"
+  description="$2"
+
+  if awk -F '\t' -v target="$title" '$2 == target { found = 1 } END { exit found ? 0 : 1 }' "$tmpdir/milestones.tsv"; then
+    echo "Milestone already exists: $title"
+    return 0
+  fi
+
+  gh api "repos/$repo/milestones" \
+    -f title="$title" \
+    -f description="$description" \
+    -f state="open" >/dev/null
+
+  printf '0\t%s\topen\n' "$title" >> "$tmpdir/milestones.tsv"
+  created_count=$((created_count + 1))
+  echo "Created milestone: $title"
+}
+
+released_number="$(awk -F '\t' -v target="$released_version" '$2 == target { print $1; exit }' "$tmpdir/milestones.tsv")"
+released_state="$(awk -F '\t' -v target="$released_version" '$2 == target { print $3; exit }' "$tmpdir/milestones.tsv")"
+
+if [ -n "$released_number" ] && [ "$released_state" = "open" ]; then
+  gh api "repos/$repo/milestones/$released_number" -X PATCH -f state="closed" >/dev/null
+  released_action="closed"
+elif [ -n "$released_number" ]; then
+  released_action="already-closed"
+else
+  released_action="missing"
+fi
+
+ensure_milestone "$next_patch_version" "Issues that we want to release in v$next_patch_version."
+ensure_milestone "$line_milestone" "Issues that we want to resolve in $MAJOR.$MINOR line."
+
+if [ "$PATCH" -eq 0 ]; then
+  ensure_milestone "$next_minor_version" "Issues that we want to release in v$next_minor_version."
+  ensure_milestone "$next_minor_line" "Issues that we want to resolve in $MAJOR.$((MINOR + 1)) line."
+fi
+
+echo "Milestone summary:"
+echo "- Released milestone: $released_version ($released_action)"
+echo "- New milestones created: $created_count"
+```
+
+### 步骤 7：输出摘要
 
 > **重要**：以下「下一步」中列出的所有 TUI 命令格式必须完整输出，不要只展示当前 AI 代理对应的格式。
 
@@ -115,6 +179,7 @@ git checkout -- .
 3. **不验证构建**：发布前执行 test 技能进行验证
 4. **版本替换范围**：通过搜索确定需要更新哪些文件；排除 AI 工具目录
 5. **适配你的项目**：以上版本更新步骤是通用的；请根据你的项目版本方案进行定制
+6. **里程碑联动**：发布时自动创建下一轮里程碑；如果里程碑体系未初始化，建议先运行 `init-milestones`
 
 ## 错误处理
 

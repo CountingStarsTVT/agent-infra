@@ -131,6 +131,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### Tools
 ```bash
+/init-milestones            # Initialize GitHub Milestones
 /init-labels                # Initialize GitHub Labels
 /refine-title               # Reformat Issue/PR title
 /upgrade-dependency         # Upgrade dependency

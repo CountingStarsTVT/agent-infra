@@ -215,7 +215,81 @@ EOF
 
 5. 如果 task.md 不包含 `pr_number`，记录为 `Development: N/A`
 
-### 7. 生成进度摘要
+### 7. 同步 Milestone
+
+根据 Issue 当前状态、任务显式配置和分支策略，为 Issue 关联线里程碑。
+
+**a) 检查 Issue 是否已有 Milestone**
+
+执行：
+
+```bash
+gh issue view {issue-number} --json milestone --jq '.milestone.title // empty'
+```
+
+如果返回非空，保留现有里程碑并记录 `Milestone: {existing} (preserved)`，跳过后续里程碑同步步骤。
+
+**b) 检查 task.md 是否显式指定 milestone**
+
+如果 task.md frontmatter 中存在非空 `milestone` 字段，优先使用该值作为目标里程碑。
+此字段应填写线里程碑标题或 `General Backlog`，不要自动指定具体版本里程碑。
+
+**c) 推断目标线里程碑**
+
+当 task.md 未显式指定 `milestone` 时，按以下顺序推断：
+
+1. 检测当前分支：
+
+```bash
+git branch --show-current
+```
+
+- 如果分支名匹配 `{major}.{minor}.x`，目标里程碑为同名线里程碑 `{major}.{minor}.x`
+
+2. 如果当前分支是 `main` 或 `master`，检测现有版本分支：
+
+```bash
+git branch -a | grep -oE '[0-9]+\.[0-9]+\.x' | sort -V | tail -1
+```
+
+- 如果存在最高版本分支 `X.Y.x`，则目标里程碑为 `(X+1).0.x`
+- 如果不存在版本分支，则读取最新 tag：
+
+```bash
+git tag --list 'v*' --sort=-v:refname | head -1
+```
+
+- 当最新 tag 存在且可解析为 `X.Y.Z` 时，目标里程碑为 `X.Y.x`
+
+3. 如果以上规则都无法得出结果，回退到 `General Backlog`
+
+**d) 查找目标里程碑编号**
+
+执行：
+
+```bash
+repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+
+gh api "repos/$repo/milestones" --paginate \
+  --jq '.[] | select(.title=="{target}") | .number'
+```
+
+- 如果目标里程碑不存在，则降级到查找 `General Backlog`
+- 如果 `General Backlog` 也不存在，则记录 `Milestone: skipped (not found)` 并跳过关联
+
+**e) 关联 Issue 到里程碑**
+
+一旦找到目标里程碑编号，执行：
+
+```bash
+gh api "repos/$repo/issues/{issue-number}" -X PATCH -F milestone={milestone-number}
+```
+
+记录：
+- `Milestone: {target} (assigned)` 或
+- `Milestone: General Backlog (fallback)`
+
+### 8. 生成进度摘要
 
 生成面向**项目经理和利益相关者**的清晰进度摘要：
 
@@ -344,7 +418,7 @@ EOF
 - **逻辑清晰**：按时间顺序呈现进展
 - **可读性强**：使用通俗语言，避免行话
 
-### 8. 发布到 Issue
+### 9. 发布到 Issue
 
 ```bash
 gh issue comment {issue-number} --body "$(cat <<'EOF'
@@ -353,7 +427,7 @@ EOF
 )"
 ```
 
-### 9. 更新任务状态
+### 10. 更新任务状态
 
 获取当前时间：
 
@@ -367,7 +441,7 @@ date "+%Y-%m-%d %H:%M:%S"
   - {yyyy-MM-dd HH:mm:ss} — **Sync to Issue** by {agent} — Progress synced to Issue #{issue-number}
   ```
 
-### 10. 告知用户
+### 11. 告知用户
 
 ```
 进度已同步到 Issue #{issue-number}。
@@ -376,6 +450,7 @@ date "+%Y-%m-%d %H:%M:%S"
 - 已完成步骤：{数量}
 - 当前状态：{状态}
 - Labels：type={type-label 或 skipped}，status={status-label 或 cleared}，in:={新增数量}
+- Milestone：{preserved / assigned / fallback / skipped}
 - Development：{已追加 Closes 关联 / 已存在关联 / 无 PR，跳过}
 - 下一步：{描述或 N/A}
 

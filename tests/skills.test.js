@@ -51,6 +51,33 @@ test("init-labels skill documents label bootstrap flow and command discovery", (
   assert.match(read(".gemini/commands/agent-orchestrator/init-labels.toml"), /agent-orchestrator/);
 });
 
+test("init-milestones skill documents milestone bootstrap flow and command discovery", () => {
+  [
+    ".agents/skills/init-milestones/SKILL.md",
+    "templates/.agents/skills/init-milestones/SKILL.md",
+    "templates/.agents/skills/init-milestones/SKILL.zh-CN.md"
+  ].forEach((relativePath) => {
+    assertContainsPatterns(relativePath, [
+      /General Backlog/,
+      /git tag --list 'v\*' --sort=-v:refname \| head -1/,
+      /package\.json/,
+      /0\.1\.0/,
+      /Issues that we want to resolve in .* line/,
+      /Issues that we want to release in v/,
+      /gh api "repos\/\$repo\/milestones"/,
+      /Milestone titles are treated as the idempotency key/
+    ]);
+  });
+
+  assert.match(read("templates/.claude/CLAUDE.md"), /\/init-milestones\s+# Initialize GitHub Milestones/);
+  assert.match(read("templates/.claude/CLAUDE.zh-CN.md"), /\/init-milestones\s+# 初始化 GitHub Milestones/);
+  assert.match(read(".claude/CLAUDE.md"), /\/init-milestones\s+# 初始化 GitHub Milestones/);
+  assert.match(read("templates/.gemini/commands/_project_/init-milestones.toml"), /\{\{project\}\}/);
+  assert.match(read("templates/.gemini/commands/_project_/init-milestones.zh-CN.toml"), /\{\{project\}\}/);
+  assert.doesNotMatch(read(".gemini/commands/agent-orchestrator/init-milestones.toml"), /\{\{project\}\}/);
+  assert.match(read(".gemini/commands/agent-orchestrator/init-milestones.toml"), /agent-orchestrator/);
+});
+
 test("sync-issue skill documents label sync and development linking", () => {
   skillDocPaths("sync-issue").forEach((relativePath) => {
     assertContainsPatterns(relativePath, [
@@ -67,6 +94,12 @@ test("sync-issue skill documents label sync and development linking", () => {
       /gh issue edit \{issue-number\} --add-label "in: \{module\}"/,
       /gh pr view \{pr-number\}/,
       /gh pr edit \{pr-number\}/,
+      /gh issue view \{issue-number\} --json milestone/,
+      /milestone` 字段|`milestone` field/,
+      /git branch --show-current/,
+      /git branch -a \| grep -oE '\[0-9\]\+\\\.\[0-9\]\+\\\.x'/,
+      /General Backlog/,
+      /Milestone[:：]/,
       /Closes #\{issue-number\}/,
       /Fixes #\{issue-number\}/,
       /Resolves #\{issue-number\}/
@@ -77,8 +110,8 @@ test("sync-issue skill documents label sync and development linking", () => {
 
     assert.deepEqual(
       stepNumbers,
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      `${relativePath} should number steps continuously from 1 to 10`
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      `${relativePath} should number steps continuously from 1 to 11`
     );
   });
 });

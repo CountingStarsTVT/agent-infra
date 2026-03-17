@@ -1,0 +1,9 @@
+---
+description: "一次性初始化仓库的标准 GitHub Milestones 体系。创建 General Backlog 和基于当前版本的初始里程碑。"
+agent: general
+subtask: false
+---
+
+读取并执行 `.agents/skills/init-milestones/SKILL.md` 中的 init-milestones 技能。
+
+严格按照技能中定义的所有步骤执行。

@@ -67,7 +67,71 @@ git commit -m "chore: release v{version}"
 git tag v{version}
 ```
 
-### Step 6: Output Summary
+### Step 6: Manage Milestones
+
+Close the milestone for the released version when it exists, and create the missing planning milestones for the next cycle.
+
+```bash
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+
+repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+released_version="${MAJOR}.${MINOR}.${PATCH}"
+line_milestone="${MAJOR}.${MINOR}.x"
+next_patch_version="${MAJOR}.${MINOR}.$((PATCH + 1))"
+next_minor_version="${MAJOR}.$((MINOR + 1)).0"
+next_minor_line="${MAJOR}.$((MINOR + 1)).x"
+
+gh api "repos/$repo/milestones?state=all" --paginate \
+  --jq '.[] | [.number, .title, .state] | @tsv' > "$tmpdir/milestones.tsv"
+
+created_count=0
+
+ensure_milestone() {
+  title="$1"
+  description="$2"
+
+  if awk -F '\t' -v target="$title" '$2 == target { found = 1 } END { exit found ? 0 : 1 }' "$tmpdir/milestones.tsv"; then
+    echo "Milestone already exists: $title"
+    return 0
+  fi
+
+  gh api "repos/$repo/milestones" \
+    -f title="$title" \
+    -f description="$description" \
+    -f state="open" >/dev/null
+
+  printf '0\t%s\topen\n' "$title" >> "$tmpdir/milestones.tsv"
+  created_count=$((created_count + 1))
+  echo "Created milestone: $title"
+}
+
+released_number="$(awk -F '\t' -v target="$released_version" '$2 == target { print $1; exit }' "$tmpdir/milestones.tsv")"
+released_state="$(awk -F '\t' -v target="$released_version" '$2 == target { print $3; exit }' "$tmpdir/milestones.tsv")"
+
+if [ -n "$released_number" ] && [ "$released_state" = "open" ]; then
+  gh api "repos/$repo/milestones/$released_number" -X PATCH -f state="closed" >/dev/null
+  released_action="closed"
+elif [ -n "$released_number" ]; then
+  released_action="already-closed"
+else
+  released_action="missing"
+fi
+
+ensure_milestone "$next_patch_version" "Issues that we want to release in v$next_patch_version."
+ensure_milestone "$line_milestone" "Issues that we want to resolve in $MAJOR.$MINOR line."
+
+if [ "$PATCH" -eq 0 ]; then
+  ensure_milestone "$next_minor_version" "Issues that we want to release in v$next_minor_version."
+  ensure_milestone "$next_minor_line" "Issues that we want to resolve in $MAJOR.$((MINOR + 1)) line."
+fi
+
+echo "Milestone summary:"
+echo "- Released milestone: $released_version ($released_action)"
+echo "- New milestones created: $created_count"
+```
+
+### Step 7: Output Summary
 
 > **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
 
@@ -116,6 +180,7 @@ git checkout -- .
 3. **No build verification**: Run the test skill before releasing to verify
 4. **Version replacement scope**: Search determines which files to update; exclude AI tool directories
 5. **Adapt to your project**: The version update steps above are generic; customize for your project's versioning scheme
+6. **Milestone coordination**: Releases should create the next planning milestones automatically; initialize the taxonomy first with `init-milestones` when needed
 
 ## Error Handling
 

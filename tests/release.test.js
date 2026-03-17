@@ -46,6 +46,8 @@ test("CLI help advertises scoped npm install commands", () => {
 test("release documentation reflects CI-driven npm publishing", () => {
   const releasing = read("RELEASING.md");
   const releaseSkill = read(".agents/skills/release/SKILL.md");
+  const releaseTemplate = read("templates/.agents/skills/release/SKILL.md");
+  const releaseTemplateZh = read("templates/.agents/skills/release/SKILL.zh-CN.md");
 
   assert.match(releasing, /NPM_TOKEN/);
   assert.match(releasing, /npm publish --provenance/);
@@ -54,4 +56,10 @@ test("release documentation reflects CI-driven npm publishing", () => {
   assert.match(releaseSkill, /推送后将自动触发 GitHub Release 创建和 npm 发布/);
   assert.match(releaseSkill, /npm 自动发布/);
   assert.match(releaseSkill, /\.aorc\.json.*templateVersion/);
+  [releaseSkill, releaseTemplate, releaseTemplateZh].forEach((content) => {
+    assert.match(content, /milestones\?state=all/);
+    assert.match(content, /Issues that we want to resolve in/);
+    assert.match(content, /Issues that we want to release in v/);
+    assert.match(content, /init-milestones/);
+  });
 });
