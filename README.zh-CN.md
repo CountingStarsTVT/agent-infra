@@ -381,7 +381,7 @@ import-issue #42                    从 GitHub Issue 导入任务
   "org": "my-org",
   "language": "en",
   "templateSource": "templates/",
-  "templateVersion": "v0.3.2",
+  "templateVersion": "v0.4.0",
   "files": {
     "managed": [
       ".agents/workspace/README.md",
