@@ -76,12 +76,14 @@ If a valid `issue_number` exists, suggest syncing:
 
 ```
 (Optional) Sync the blocking status to the Issue:
-  - Claude Code / OpenCode: /sync-issue {issue_number}
-  - Gemini CLI: /{{project}}:sync-issue {issue_number}
-  - Codex CLI: $sync-issue {issue_number}
+  - Claude Code / OpenCode: /sync-issue #{issue_number}
+  - Gemini CLI: /{{project}}:sync-issue #{issue_number}
+  - Codex CLI: $sync-issue #{issue_number}
 ```
 
 ### 7. Inform User
+
+> **IMPORTANT**: All TUI command formats listed below must be output in full. Do not show only the format for the current AI agent.
 
 Output format:
 ```
@@ -94,6 +96,11 @@ Archived to: .agents/workspace/blocked/{task-id}/
 To unblock when the issue is resolved:
   mv .agents/workspace/blocked/{task-id} .agents/workspace/active/{task-id}
   # Then update task.md: status -> active, remove blocked_at
+
+Next step - check task status after unblocking:
+  - Claude Code / OpenCode: /check-task {task-id}
+  - Gemini CLI: /{{project}}:check-task {task-id}
+  - Codex CLI: $check-task {task-id}
 ```
 
 ## Output Template
